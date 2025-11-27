@@ -1,4 +1,4 @@
-name: wagtail_prod
+name: scacaf
 channels:
   - conda-forge
 
