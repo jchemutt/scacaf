@@ -1,0 +1,48 @@
+{# portal/includes/testimonial_card.html #}
+{% load wagtailcore_tags wagtailimages_tags wagtailmedia_tags %}
+
+{# Accept either `t` or `testimonial` #}
+{% with item=t|default:testimonial %}
+<a href="{{ item.url }}"
+   class="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft overflow-hidden hover:shadow-lg hover:border-brand-500 transition-all duration-300">
+  <div class="p-4">
+    <div class="flex items-start gap-3">
+      <!-- Optional avatar (from related resource thumbnail if you have one) or a quote icon -->
+      <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 grid place-items-center text-slate-400 shrink-0">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M7.17 6A5.17 5.17 0 0 0 2 11.17V22h8v-9H6.83A3.83 3.83 0 0 1 10.66 9h.01V6zm10 0A5.17 5.17 0 0 0 12 11.17V22h8v-9h-3.17A3.83 3.83 0 0 1 20.66 9h.01V6z"/></svg>
+      </div>
+
+      <div class="min-w-0">
+        <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-3">
+          “{{ item.quote }}”
+        </p>
+        <div class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+          <span class="font-medium">{{ item.author }}</span>
+          {% if item.role or item.org %} · {{ item.role }}{% if item.role and item.org %}, {% endif %}{{ item.org }}{% endif %}
+        </div>
+
+        {% if item.topics.exists %}
+          <div class="mt-2 flex flex-wrap gap-1">
+            {% for tp in item.topics.all|slice:":2" %}
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">{{ tp.name }}</span>
+            {% endfor %}
+            {% if item.topics.all|length > 2 %}
+              <span class="text-[11px] text-slate-500">+{{ item.topics.all|length|add:"-2" }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if item.video %}
+      <div class="mt-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black">
+        {% media item.video %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="px-4 pb-4 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-end">
+    <span class="inline-flex items-center gap-1 group-hover:text-brand-600">Read story →</span>
+  </div>
+</a>
+{% endwith %}

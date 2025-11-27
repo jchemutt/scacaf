@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}Webinars | SCACAF e-Hub{% endblock %}
+
+{% block hero %}
+<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="mx-auto max-w-7xl px-4 py-12">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Webinars</h1>
+        {% if page.intro %}
+          <p class="mt-3 text-lg text-slate-600 dark:text-slate-300">{{ page.intro|richtext }}</p>
+        {% endif %}
+      </div>
+
+      <!-- When tabs -->
+      <div class="shrink-0">
+        <div class="inline-flex rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        {% with when=request.GET.when %}
+  <a href="{{ page.url }}"
+     class="px-3 py-2 text-sm {% if not when or when != 'past' %}bg-brand-600 text-white{% endif %}">
+    Upcoming
+  </a>
+  <a href="{{ page.url }}?when=past"
+     class="px-3 py-2 text-sm {% if when == 'past' %}bg-brand-600 text-white{% endif %}">
+    Past
+  </a>
+{% endwith %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Search + Topic filter -->
+    <form method="get" action="{{ page.url }}" class="mt-6 grid md:grid-cols-[1fr,auto] gap-3">
+      <div>
+        <label class="relative block">
+          <span class="sr-only">Search webinars</span>
+          <input name="q" value="{{ request.GET.q }}"
+                 placeholder="Search webinars (topics, title…) "
+                 class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-10 py-2.5 shadow-soft outline-none focus:ring-2 focus:ring-brand-500">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z"/></svg>
+        </label>
+      </div>
+      <div class="flex gap-2">
+        <select name="topic" class="rounded-xl border border-slate-300/70 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-900">
+          <option value="">All topics</option>
+          {% for t in topics %}
+            <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+        {% if request.GET.when %}<input type="hidden" name="when" value="{{ request.GET.when }}">{% endif %}
+        <button class="px-4 rounded-xl bg-brand-600 text-white">Filter</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if webinars %}
+      {% for w in webinars %}
+        {% include "portal/includes/webinar_card.html" with w=w %}
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+        <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎥</div>
+        <p class="font-medium">No webinars found</p>
+        <p class="text-sm mt-1">Try a different topic or switch between Upcoming and Past.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

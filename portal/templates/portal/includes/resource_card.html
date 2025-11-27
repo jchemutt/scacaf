@@ -1,0 +1,68 @@
+{# portal/includes/resource_card.html #}
+{% load wagtailimages_tags wagtailcore_tags %}
+
+<a href="{{ r.url }}"
+   class="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft overflow-hidden hover:shadow-lg hover:border-brand-500 transition-all duration-300">
+
+  <!-- Thumbnail -->
+  <div class="relative h-40 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+    {% if r.thumbnail %}
+      {% image r.thumbnail fill-600x360 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" %}
+    {% else %}
+      <div class="w-full h-full grid place-items-center text-slate-400">
+        <svg class="w-10 h-10 opacity-60" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M3 4v16h18V4zm16 14H5V6h14zM8 8h4v4H8zm6 0h2v2h-2zm0 4h2v2h-2zM8 14h4v2H8z"/>
+        </svg>
+      </div>
+    {% endif %}
+
+    <!-- Kind badge -->
+    <span class="absolute top-2 left-2 text-[11px] font-medium px-2 py-1 rounded-lg bg-black/60 text-white backdrop-blur-sm">
+      {{ r.get_kind_display }}
+    </span>
+    {% if r.featured %}
+      <span class="absolute top-2 right-2 text-[11px] font-medium px-2 py-1 rounded-lg bg-brand-600 text-white">Featured</span>
+    {% endif %}
+  </div>
+
+  <!-- Content -->
+  <div class="p-4">
+    <h3 class="text-base font-semibold line-clamp-2 group-hover:text-brand-600 transition-colors">
+      {{ r.title }}
+    </h3>
+
+    {% if r.abstract %}
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+        {{ r.abstract|richtext|striptags }}
+      </p>
+    {% endif %}
+
+    <!-- Taxonomy chips -->
+    <div class="mt-3 flex flex-wrap gap-1">
+      {% with t=r.topics.all %}
+        {% for tp in t|slice:":2" %}
+          <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300">{{ tp.name }}</span>
+        {% endfor %}
+        {% if t|length > 2 %}
+          <span class="text-[11px] text-slate-500">+{{ t|length|add:"-2" }}</span>
+        {% endif %}
+      {% endwith %}
+
+      {% with langs=r.languages.all %}
+        {% if langs %}
+          <span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+            {{ langs.0.code|upper }}
+          </span>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      <span>{{ r.date|date:"M j, Y" }}</span>
+      <span class="inline-flex items-center gap-1 group-hover:text-brand-600">
+        View →
+      </span>
+    </div>
+  </div>
+</a>

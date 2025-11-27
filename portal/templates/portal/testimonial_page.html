@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags wagtailmedia_tags %}
+
+{% block title %}{{ page.title }} | Impact story{% endblock %}
+
+{% block hero %}
+<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="mx-auto max-w-4xl px-4 py-12">
+    <p class="text-sm text-slate-500 dark:text-slate-400">Impact story</p>
+    <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
+    <div class="mt-3 text-slate-600 dark:text-slate-300">
+      <span class="font-medium">{{ page.author }}</span>
+      {% if page.role or page.org %} · {{ page.role }}{% if page.role and page.org %}, {% endif %}{{ page.org }}{% endif %}
+    </div>
+
+    {% if page.topics.exists %}
+      <div class="mt-4 flex flex-wrap gap-2">
+        {% for tp in page.topics.all %}
+          <span class="px-2.5 py-1 rounded-full text-xs bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
+            {{ tp.name }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<article class="mx-auto max-w-4xl">
+  <!-- Quote -->
+  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft">
+    <blockquote class="text-lg leading-relaxed">
+      “{{ page.quote }}”
+    </blockquote>
+  </div>
+
+  <!-- Optional video -->
+  {% if page.video %}
+    <div class="mt-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black">
+      {% media page.video %}
+    </div>
+  {% endif %}
+
+  <!-- Related objects -->
+  <div class="mt-10 grid sm:grid-cols-2 gap-6">
+    {% if page.about_resource %}
+      <a href="{{ page.about_resource.url }}" class="block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-brand-500 hover:shadow-soft transition">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">About resource</p>
+        <p class="mt-1 font-semibold line-clamp-2">{{ page.about_resource.title }}</p>
+      </a>
+    {% endif %}
+    {% if page.about_webinar %}
+      <a href="{{ page.about_webinar.url }}" class="block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-brand-500 hover:shadow-soft transition">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">About webinar</p>
+        <p class="mt-1 font-semibold line-clamp-2">{{ page.about_webinar.title }}</p>
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Back / CTA -->
+  <div class="mt-12 flex items-center justify-between">
+    <a href="{{ page.get_parent.url }}" class="inline-flex items-center gap-2 text-sm hover:underline">
+      ← Back to Impact stories
+    </a>
+    <div class="flex items-center gap-2">
+      {% if page.about_resource %}<a class="px-3 py-2 rounded-lg border text-sm hover:bg-slate-50 dark:hover:bg-slate-900" href="{{ page.about_resource.url }}">View resource</a>{% endif %}
+      {% if page.about_webinar %}<a class="px-3 py-2 rounded-lg border text-sm hover:bg-slate-50 dark:hover:bg-slate-900" href="{{ page.about_webinar.url }}">View webinar</a>{% endif %}
+    </div>
+  </div>
+</article>
+{% endblock %}

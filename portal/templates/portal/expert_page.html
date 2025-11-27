@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}{{ page.title }} | Expert{% endblock %}
+
+{% block hero %}
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 50%_20%,black,transparent)] bg-[radial-gradient(1200px_600px_at_10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-10">
+    <div class="flex items-start gap-6">
+      <div class="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+        {% if page.photo %}
+          {% image page.photo fill-192x192 class="w-full h-full object-cover" %}
+        {% else %}
+          <div class="w-full h-full grid place-items-center text-slate-400">
+            <svg class="w-10 h-10 opacity-60" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/></svg>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="min-w-0">
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
+        {% if page.role or page.organization %}
+          <p class="mt-1 text-slate-600 dark:text-slate-300">
+            {{ page.role }}{% if page.role and page.organization %} · {% endif %}{{ page.organization }}
+          </p>
+        {% endif %}
+
+        <!-- Chips -->
+        <div class="mt-3 flex flex-wrap gap-2">
+          {% for tp in page.expertise.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ tp.name }}</span>
+          {% endfor %}
+          {% for rg in page.regions.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs">{{ rg.name }}</span>
+          {% endfor %}
+          
+         {% if page.languages.exists %}
+      {% for lg in page.languages.all|slice:":2" %}
+        <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">{{ lg.name }}</span>
+      {% endfor %}
+      
+      {% if page.languages.all|length > 2 %}
+        <span class="text-[11px] text-slate-500">+{{ page.languages.all|length|add:"-2" }}</span>
+      {% endif %}
+    {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="grid lg:grid-cols-12 gap-8">
+  <!-- Main -->
+  <article class="lg:col-span-8">
+    {% if page.bio %}
+      <div class="prose dark:prose-invert max-w-none">
+        {{ page.bio|richtext }}
+      </div>
+    {% else %}
+      <p class="text-slate-600 dark:text-slate-400">No bio provided.</p>
+    {% endif %}
+
+    <!-- Resources aligned with expertise -->
+    {% with res=page.resources_by_expert %}
+      {% if res %}
+        <section class="mt-10">
+          <h2 class="text-xl font-semibold flex items-center gap-2">
+            <span>Resources aligned with expertise</span><span class="text-base">📚</span>
+          </h2>
+          <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for r in res %}
+              {% include "portal/includes/resource_card.html" with r=r %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Webinars -->
+    {% with talks=page.webinars_by_expert %}
+      {% if talks %}
+        <section class="mt-10">
+          <h2 class="text-xl font-semibold flex items-center gap-2">
+            <span>Webinars & talks</span><span class="text-base">🎤</span>
+          </h2>
+          <div class="mt-4 grid sm:grid-cols-2 gap-6">
+            {% for w in talks %}
+              {% include "portal/includes/webinar_card.html" with w=w %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    {% endwith %}
+  </article>
+
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4">
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Contact & meta</h3>
+      <ul class="mt-3 space-y-2 text-sm">
+        {% if page.organization %}<li><span class="text-slate-500">Organization:</span> {{ page.organization }}</li>{% endif %}
+        {% if page.role %}<li><span class="text-slate-500">Role:</span> {{ page.role }}</li>{% endif %}
+       {% with langs=page.languages.all %}
+        {% if langs %}
+          <li>
+            <span class="text-slate-500">Languages:</span>
+            {% for l in langs %}{{ l.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          </li>
+        {% endif %}
+      {% endwith %}
+      </ul>
+    </div>
+
+    {% if page.expertise.all %}
+      <div class="mt-4 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Expertise</h3>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {% for t in page.expertise.all %}
+            <span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ t.name }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

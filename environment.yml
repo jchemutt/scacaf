@@ -1,0 +1,16 @@
+name: wagtail_prod
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  - pip
+
+  - pip:
+      - "Django>=5.2,<5.3"
+      - "wagtail>=7.2,<7.3"
+      - "psycopg[binary]"
+      - gunicorn
+      - wagtail-cache
+      - wagtail-seo
+      - wagtailmedia

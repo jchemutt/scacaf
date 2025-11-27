@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}Impact stories | SCACAF e-Hub{% endblock %}
+
+{% block hero %}
+<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="mx-auto max-w-7xl px-4 py-12">
+    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Impact stories</h1>
+    {% if page.intro %}
+      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300">{{ page.intro|richtext }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="grid lg:grid-cols-[240px,1fr] gap-8">
+  <!-- Filters -->
+  <aside class="space-y-4">
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
+      <h2 class="text-sm font-semibold text-slate-500 dark:text-slate-400">Filter by topic</h2>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <a href="{{ page.url }}"
+           class="px-3 py-1.5 rounded-full text-sm border
+                  {% if not request.GET.topic %}border-brand-600 text-brand-700 bg-brand-50 dark:bg-slate-800 dark:text-brand-300{% else %}border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">
+          All
+        </a>
+        {% for t in topics %}
+          <a href="{{ page.url }}?topic={{ t.name|urlencode }}"
+             class="px-3 py-1.5 rounded-full text-sm border
+                    {% if request.GET.topic == t.name %}border-brand-600 text-brand-700 bg-brand-50 dark:bg-slate-800 dark:text-brand-300{% else %}border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">
+            {{ t.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <!-- Cards -->
+  <section>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% if testimonials %}
+        {% for t in testimonials %}
+          {% include "portal/includes/testimonial_card.html" with t=t %}
+        {% endfor %}
+      {% else %}
+        <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+          <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">💬</div>
+          <p class="font-medium">No testimonials yet</p>
+          <p class="text-sm mt-1">Add stories in <a class="underline decoration-dotted hover:no-underline" href="/admin/">Admin → Testimonials</a>.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}Home | Knowledge Portal{% endblock %}
+
+{% block hero %}
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <!-- Overlay stack: base gradient + radial vignette -->
+  <div class="absolute inset-0">
+    <!-- 1) Base vertical gradient (light/dark aware) -->
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
+
+    <!-- 2) Subtle vignette + brand glow (center stays bright, edges fade) -->
+    <div
+      class="absolute inset-0
+             [mask-image:radial-gradient(65%_60%_at_30%_30%,black,transparent)]
+             bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative mx-auto max-w-7xl px-4 py-16 grid md:grid-cols-2 gap-10 items-center">
+
+    <!-- Left: Messaging -->
+    <div>
+      <p class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
+        The SCACAF e-Hub · Climate Adaptation Finance
+      </p>
+
+      <h1 class="mt-3 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        Unlock <span class="text-brand-600">adaptation finance</span> for a climate-resilient Africa.
+      </h1>
+
+      <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
+        A one-stop hub with practical resources, expert support, and a community of practice to turn NDCs &amp; NAPs into
+        <em>bankable</em> adaptation investments.
+      </p>
+
+      <!-- CTAs -->
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">
+          Browse resources
+          <svg class="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+        </a>
+        <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900">
+          Find experts
+        </a>
+        <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900">
+          Join a webinar
+        </a>
+      </div>
+
+      <!-- Quick search -->
+      {% if repo_index %}
+      <form action="{{ repo_index.url }}" method="get" class="mt-6" x-data>
+        <label class="relative block">
+          <span class="sr-only">Search the repository</span>
+          <input name="q" placeholder="Search climate rationale, ToC, VfM, MEL…"
+                 class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft outline-none focus:ring-2 focus:ring-brand-500"
+                 data-global-search autocomplete="off">
+          <button class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white text-sm">
+            Search
+          </button>
+        </label>
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          Tip: press <kbd class="px-1 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">/</kbd> to focus search.
+        </p>
+      </form>
+      {% endif %}
+
+      <!-- Outcome area chips -->
+      <div class="mt-6 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]" style="-webkit-overflow-scrolling:touch;">
+        <div class="flex gap-2 w-max pr-2">
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Climate finance landscape</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Donor research</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Climate rationale</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Theory of Change</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Budget &amp; VfM</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Feasibility &amp; Gender</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">Stakeholder engagement</span>
+        <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm">MEL</span>
+      </div>
+      </div>
+    </div>
+
+    <!-- Right: Mission / Vision / Values cards -->
+    <div class="grid gap-4">
+      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft">
+        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Mission</p>
+        <p class="mt-1">
+          Catalyzing systems-level climate adaptation in Africa by unlocking climate finance through
+          <em>learning-by-doing</em> capacity initiatives for bankable proposals.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft">
+        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Vision</p>
+        <p class="mt-1">
+          A climate-resilient Africa with equitable access to climate finance, fostering sustainable development and resilience.
+        </p>
+      </div>
+
+      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft">
+        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Core values</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Inclusivity</span>
+          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Collaboration</span>
+          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Innovation</span>
+          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Sustainability</span>
+        </div>
+        <p class="mt-3 text-xs text-slate-500 dark:text-slate-500">
+          Supported by AGNES &amp; ACBF. Guided by IPCC AR6 and aligned to NDCs &amp; NAPs implementation.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+
+
+{% block content %}
+<hr class="mt-10 mb-6 border-slate-200/70 dark:border-slate-800/70">
+<!-- Featured Resources -->
+<section>
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-xl font-semibold flex items-center gap-2">
+  <span>Featured resources</span>
+  <span class="text-base">✨</span>
+</h2>
+
+    <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+       class="text-sm text-brand-600 hover:underline">
+       Browse all →
+    </a>
+</div>
+  <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if featured_resources %}
+      {% for r in featured_resources %}
+        {% include "portal/includes/resource_card.html" with r=r %}
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+  <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📦</div>
+  <p class="font-medium">No resources yet</p>
+  <p class="text-sm mt-1">
+    Add some in <a class="underline decoration-dotted hover:no-underline" href="/admin/">Admin → Repository</a>.
+  </p>
+</div>
+    {% endif %}
+  </div>
+</section>
+<hr class="mt-10 mb-6 border-slate-200/70 dark:border-slate-800/70">
+
+<!-- Split: Upcoming Webinars + Expert Highlights -->
+<section class="mt-12 grid lg:grid-cols-2 gap-8">
+  <!-- Webinars -->
+  <div>
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold flex items-center gap-2">
+  <span>Upcoming webinars</span>
+  <span class="text-base">✨</span>
+</h2>
+  
+
+  <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+     class="text-sm text-brand-600 hover:underline">
+     See all →
+  </a>
+</div>
+    <div class="mt-4 grid sm:grid-cols-2 gap-6">
+  {% if upcoming_webinars %}
+    {% for w in upcoming_webinars %}
+      {% include "portal/includes/webinar_card.html" with webinar=w %}
+    {% endfor %}
+  {% else %}
+    <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+      <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📅</div>
+      <p class="font-medium">No webinars yet</p>
+      <p class="text-sm mt-1">
+        Add some in <a class="underline decoration-dotted hover:no-underline" href="/admin/">Admin → Webinars</a>.
+      </p>
+    </div>
+  {% endif %}
+</div>
+  </div>
+
+  <!-- Experts -->
+  <div>
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold flex items-center gap-2">
+  <span>Expert highlights</span>
+  <span class="text-base">✨</span>
+</h2>
+ 
+
+  <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+     class="text-sm text-brand-600 hover:underline">
+     Meet all experts →
+  </a>
+</div>
+    <div class="mt-4 grid sm:grid-cols-2 gap-6">
+      {% if experts %}
+        {% for e in experts %}
+          {% include "portal/includes/expert_card.html" with expert=e %}
+        {% endfor %}
+      {% else %}
+       <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+  <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🧑‍💼</div>
+  <p class="font-medium">No experts yet</p>
+  <p class="text-sm mt-1">
+    Add some in <a class="underline decoration-dotted hover:no-underline" href="/admin/">Admin → Repository</a>.
+  </p>
+</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<hr class="mt-10 mb-6 border-slate-200/70 dark:border-slate-800/70">
+
+<!-- Testimonials -->
+<section class="mt-12">
+<div class="flex items-center justify-between gap-4">
+  
+
+  <h2 class="text-xl font-semibold flex items-center gap-2">
+  <span>Impact stories</span>
+  <span class="text-base">✨</span>
+</h2>
+
+  <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
+     class="text-sm text-brand-600 hover:underline">
+     Explore all →
+  </a>
+</div>
+  <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {% if testimonials %}
+      {% for t in testimonials %}
+        {% include "portal/includes/testimonial_card.html" with t=t %}
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
+  <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎤</div>
+  <p class="font-medium">No testimonials yet</p>
+  <p class="text-sm mt-1">
+    Add some in <a class="underline decoration-dotted hover:no-underline" href="/admin/">Admin → Repository</a>.
+  </p>
+</div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

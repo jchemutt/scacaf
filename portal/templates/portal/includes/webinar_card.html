@@ -1,0 +1,53 @@
+{# portal/includes/webinar_card.html #}
+{% load wagtailcore_tags %}
+
+{% with item=w|default:webinar %}
+<a href="{{ item.url }}"
+   class="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft overflow-hidden hover:shadow-lg hover:border-brand-500 transition-all duration-300">
+
+  <div class="p-4">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          {{ item.start_datetime|date:"M j, Y · g:i a" }}
+        </p>
+        <h3 class="mt-1 text-lg font-semibold line-clamp-2 group-hover:text-brand-600 transition-colors">
+          {{ item.title }}
+        </h3>
+        {% if item.platform %}
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ item.platform }}</p>
+        {% endif %}
+
+        {% if item.topics.exists %}
+          <div class="mt-3 flex flex-wrap gap-1 text-[11px]">
+            {% for t in item.topics.all|slice:":3" %}
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {{ t.name }}
+              </span>
+            {% endfor %}
+            {% if item.topics.all|length > 3 %}
+              <span class="text-[11px] text-slate-500">+{{ item.topics.all|length|add:"-3" }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if item.speakers.exists %}
+          <div class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            <span class="font-medium">Speakers:</span>
+            {% for s in item.speakers.all|slice:":3" %}
+              {{ s.title }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% if item.speakers.all|length > 3 %}, +{{ item.speakers.all|length|add:"-3" }} more{% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if item.registration_url %}
+      <span class="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
+        Register →
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</a>
+{% endwith %}

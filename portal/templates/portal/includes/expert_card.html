@@ -1,0 +1,66 @@
+{# portal/includes/expert_card.html #}
+{% load wagtailimages_tags %}
+
+{# Accept either `e` or `expert` from parent template #}
+{% with ex=e|default:expert %}
+<a href="{{ ex.url }}"
+   class="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft overflow-hidden hover:shadow-lg hover:border-brand-500 transition-all duration-300">
+  <div class="flex gap-4 p-4">
+    <!-- Avatar -->
+    <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+      {% if ex.photo %}
+        {% image ex.photo fill-128x128 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" %}
+      {% else %}
+        <div class="w-full h-full grid place-items-center text-slate-400">
+          <svg class="w-8 h-8 opacity-60" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/>
+          </svg>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Main -->
+    <div class="min-w-0">
+      <h3 class="text-base font-semibold line-clamp-1 group-hover:text-brand-600 transition-colors">
+        {{ ex.title }}
+      </h3>
+      {% if ex.role or ex.organization %}
+        <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+          {{ ex.role }}{% if ex.role and ex.organization %} · {% endif %}{{ ex.organization }}
+        </p>
+      {% endif %}
+
+      <!-- Chips -->
+      <div class="mt-2 flex flex-wrap gap-1">
+        {# up to 2 expertise #}
+        {% for tp in ex.expertise.all|slice:":2" %}
+          <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">{{ tp.name }}</span>
+        {% endfor %}
+        {% if ex.expertise.all|length > 2 %}
+          <span class="text-[11px] text-slate-500">+{{ ex.expertise.all|length|add:"-2" }}</span>
+        {% endif %}
+
+        {# 1 region #}
+        {% for rg in ex.regions.all|slice:":1" %}
+          <span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">{{ rg.name }}</span>
+        {% endfor %}
+
+        {% with langs=ex.languages.all %}
+  {% if langs %}
+    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">
+      {% for lg in langs|slice:":3" %}
+        {{ lg.name }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+      {% if langs|length > 3 %} +{{ langs|length|add:"-3" }}{% endif %}
+    </span>
+  {% endif %}
+{% endwith %}
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 pb-4 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-end">
+    <span class="inline-flex items-center gap-1 group-hover:text-brand-600">View profile →</span>
+  </div>
+</a>
+{% endwith %}
