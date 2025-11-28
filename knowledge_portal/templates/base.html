@@ -4,8 +4,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-    <title>{% block title %}{{ page.seo_title|default:page.title }} | Knowledge Portal{% endblock %}</title>
-    <meta name="description" content="{{ page.search_description|default:'Explore resources, experts, webinars and impact stories.' }}" />
+
+    <!-- Title (SAFE FOR NON-WAGTAIL VIEWS) -->
+    <title>
+      {% block title %}
+        {% if page %}
+          {{ page.seo_title|default:page.title }} | Knowledge Portal
+        {% else %}
+          Knowledge Portal
+        {% endif %}
+      {% endblock %}
+    </title>
+
+    <!-- Description -->
+    <meta name="description" content="
+      {% if page %}
+        {{ page.search_description|default:'Explore resources, experts, webinars and impact stories.' }}
+      {% else %}
+        Access the SCACAF E-Hub knowledge portal.
+      {% endif %}
+    " />
+
     <meta name="csrf-token" content="{{ csrf_token }}"/>
 
     <!-- Favicon -->
@@ -13,36 +32,31 @@
     <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 
-    <!-- Open Graph (good defaults) -->
-    <meta property="og:title" content="{{ page.seo_title|default:page.title }}">
-    <meta property="og:description" content="{{ page.search_description|default:'Explore resources, experts, webinars and impact stories.' }}">
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% if page %}{{ page.seo_title|default:page.title }}{% else %}Knowledge Portal{% endif %}">
+    <meta property="og:description" content="{% if page %}{{ page.search_description|default:'Explore resources, experts, webinars and impact stories.' }}{% else %}SCACAF E-Hub Login{% endif %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri|default_if_none:'' }}">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap" rel="stylesheet">
+
     <style>
-      html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; }
+      html { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+      .nav-link { position: relative; }
+      .nav-link::after {
+        content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
+        background: linear-gradient(90deg,#6366f1,#14b8a6);
+        transition: width .25s ease;
+      }
+      .nav-link:hover::after, .nav-link[aria-current="page"]::after { width:100%; }
+      .card { transition: transform .15s ease, box-shadow .2s ease; }
+      .card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(2,6,23,.10); }
+      :focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
     </style>
-    <style>
-    .nav-link { position: relative; }
-    .nav-link::after {
-      content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
-      background: linear-gradient(90deg,#6366f1,#14b8a6);
-      transition: width .25s ease;
-    }
-    .nav-link:hover::after, .nav-link[aria-current="page"]::after { width:100%; }
-  </style>
 
-  <style>
-  .card { transition: transform .15s ease, box-shadow .2s ease; }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(2,6,23,.10); }
-  </style>
-
-    <!-- Tailwind (CDN for zero-build speed) -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-  :focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
-</style>
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -51,20 +65,19 @@
             colors: {
               brand: { 50:'#eef2ff', 100:'#e0e7ff', 200:'#c7d2fe', 300:'#a5b4fc', 400:'#818cf8', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca', 800:'#3730a3', 900:'#312e81' },
             },
-            boxShadow: { soft: '0 8px 30px rgba(0,0,0,.06)'}
+            boxShadow: { soft: '0 8px 30px rgba(0,0,0,.06)' }
           }
         }
       }
     </script>
 
-    <!-- Alpine.js (state, toggles, menus) -->
+    <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- HTMX (progressive enhancement: search bars, filters) -->
+    <!-- HTMX -->
     <script defer src="https://unpkg.com/htmx.org@1.9.12"></script>
 
-   
-    <!-- Keyboard shortcuts & theme -->
+    <!-- Theme + Keyboard -->
     <script>
       function baseLayout() {
         return {
@@ -83,7 +96,6 @@
             this.announce(`Theme set to ${this.theme}`);
           },
           kbd(e) {
-            // / to focus main search, t to toggle theme, g then r/e/w/t to go
             if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
             if (e.key === '/') { e.preventDefault(); const s = document.querySelector('[data-global-search]'); if (s) s.focus(); return; }
             if (e.key.toLowerCase() === 't') { this.toggleTheme(); return; }
@@ -95,131 +107,228 @@
       })
     </script>
 
-
     {% block extra_head %}{% endblock %}
     {% wagtailuserbar %}
   </head>
 
   <body class="h-full bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-100">
 
-   
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 left-2 bg-brand-600 text-white px-3 py-2 rounded-md">Skip to content</a>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 top-2 left-2 bg-brand-600 text-white px-3 py-2 rounded-md">Skip to content</a>
     <div id="a11y-announce" class="sr-only" aria-live="polite"></div>
 
-    <!-- Header / Global Nav -->
-    <!-- base.html -> header class additions -->
+  
+<!-- Header -->
 <header class="sticky top-0 z-50 bg-white/70 dark:bg-slate-950/70 backdrop-blur
   border-b border-transparent [border-image:linear-gradient(90deg,rgba(99,102,241,.35),rgba(14,165,233,.35))_1]">
 
-      <div class="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
-        <!-- Left: Brand -->
-        <div class="flex items-center gap-3">
-          <button @click="mobileOpen = !mobileOpen" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900" aria-label="Toggle menu" aria-expanded="false">
-            <svg viewBox="0 0 24 24" class="w-5 h-5"><path fill="currentColor" d="M4 7h16M4 12h16M4 17h16"/></svg>
+  <div class="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
+
+    <!-- Left: Brand + Mobile Toggle -->
+    <div class="flex items-center gap-3">
+      <button @click="mobileOpen = !mobileOpen"
+              class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg
+                     border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900"
+              aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" class="w-5 h-5"><path fill="currentColor" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
+        <span>SCACAF E-Hub</span>
+      </a>
+    </div>
+
+    <!-- Search -->
+    <div class="hidden md:block md:flex-1 md:mx-6">
+      {% if repo_index %}
+      <form action="{{ repo_index.url }}" method="get" class="max-w-xl">
+        <label class="relative block">
+          <input data-global-search name="q" placeholder="Search resources… ( / )"
+                 class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700
+                        bg-white/70 dark:bg-slate-900/60 px-10 py-2.5 shadow-soft outline-none
+                        focus:ring-2 focus:ring-brand-500" autocomplete="off">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+               viewBox="0 0 24 24">
+            <path fill="currentColor"
+                  d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14z"/>
+          </svg>
+        </label>
+      </form>
+      {% endif %}
+    </div>
+
+    <!-- Right: Theme + Login/Logout -->
+    <div class="flex items-center gap-2">
+
+      <!-- Theme Toggle -->
+      <button @click="toggleTheme"
+              class="inline-flex items-center justify-center w-10 h-10 rounded-lg
+                     border border-slate-200 dark:border-slate-800
+                     hover:bg-slate-100 dark:hover:bg-slate-900">
+        <svg x-show="theme==='light'" class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="currentColor"
+            d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.79 1.8-1.79zM1 13h3v-2H1v2zm10 10h2v-3h-2v3zM1 5h3V3H1v2zm16.24-.16l1.79-1.79L21.66 3.9l-1.79 1.79-1.63-1.84zM20 13h3v-2h-3v2zM12 1h2v3h-2V1zm6.24 16.24l1.63 1.84 1.79-1.79-1.79-1.79-1.63 1.74zM6.24 18.76l-1.8 1.79L3.17 18.7l1.79-1.79 1.28 1.85zM12 7a5 5 0 100 10 5 5 0 000-10z"/>
+        </svg>
+        <svg x-show="theme==='dark'" class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="currentColor"
+            d="M12 2a9.99 9.99 0 00-7.07 17.07A10 10 0 1012 2z"/>
+        </svg>
+      </button>
+
+      <!-- Auth -->
+      {% if request.user.is_authenticated %}
+
+        <!-- Show username -->
+        <span class="hidden sm:inline text-sm mr-1">
+          {{ request.user.first_name|default:request.user.username }}
+        </span>
+
+        <!-- Logout -->
+        <form action="{% url 'logout' %}" method="post" class="inline">
+          {% csrf_token %}
+          <button type="submit"
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg 
+                   border border-slate-200 dark:border-slate-800 
+                   hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
+
+            <!-- Logout Icon: arrow LEFT -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                 viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 13v-2H7.83l3.59-3.59L10 5l-6 6 6 6 
+                       1.41-1.41L7.83 13H16z"/>
+              <path d="M20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 
+                       0 0 0-2-2z"/>
+            </svg>
+
+            Logout
           </button>
-          <a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
-            <!-- Optional logo -->
-            <span>SCACAF E-Hub</span>
-          </a>
-        </div>
+        </form>
 
-        <!-- Center: Global Search -->
-        <div class="hidden md:block md:flex-1 md:mx-6">
-          {% if repo_index %}
-          <form action="{{ repo_index.url }}" method="get" class="max-w-xl">
-            <label class="relative block">
-              <span class="sr-only">Search repository</span>
-              <input data-global-search name="q" placeholder="Search resources, tools, webinars…  ( / )"
-                     class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 px-10 py-2.5 shadow-soft outline-none focus:ring-2 focus:ring-brand-500"
-                     autocomplete="off">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z"/></svg>
-            </label>
-          </form>
-          {% endif %}
-        </div>
+        {% if request.user.is_superuser %}
+        <a href="/admin/"
+           class="inline-flex items-center gap-2 px-3 py-2 rounded-lg
+                  border border-slate-200 dark:border-slate-800 
+                  hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
 
-        <!-- Right: Actions -->
-        <div class="flex items-center gap-2">
-          <button @click="toggleTheme" class="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900" aria-label="Toggle theme">
-            <svg x-show="theme==='light'" class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.79 1.8-1.79zM1 13h3v-2H1v2zm10 10h2v-3h-2v3zM1 5h3V3H1v2zm16.24-.16l1.79-1.79L21.66 3.9l-1.79 1.79-1.63-1.84zM20 13h3v-2h-3v2zM12 1h2v3h-2V1zm6.24 16.24l1.63 1.84 1.79-1.79-1.79-1.79-1.63 1.74zM6.24 18.76l-1.8 1.79L3.17 18.7l1.79-1.79 1.28 1.85zM12 7a5 5 0 100 10 5 5 0 000-10z"/></svg>
-            <svg x-show="theme==='dark'" class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a9.99 9.99 0 00-7.07 17.07A10 10 0 1012 2z"/></svg>
-          </button>
-          <a href="/admin/" class="nav-link sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
-            <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.7 0 5.33.79 7.5 2.25V20H4.5v-5.75C6.67 12.79 9.3 12 12 12zm0-2a4 4 0 110-8 4 4 0 010 8z"/></svg>
-            Admin
-          </a>
-        </div>
-      </div>
+          <!-- Admin Icon -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.7 0 5.33.79 7.5 2.25V20H4.5v-5.75
+                     C6.67 12.79 9.3 12 12 12zm0-2a4 4 0 110-8 4 4 0 010 8z"/>
+          </svg>
 
-      <!-- Mobile Nav -->
-      <nav x-show="mobileOpen" x-transition
-     class="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-  <div class="px-4 py-3 grid gap-2">
+          Admin
+        </a>
+        {% endif %}
 
-    <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Repository</a>
+      {% else %}
 
-    <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Experts</a>
+      <a href="{% url 'login' %}"
+   class="inline-flex items-center gap-2 px-3 py-2 rounded-lg 
+          border border-slate-200 dark:border-slate-800 
+          hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
 
-    <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Webinars</a>
+  <!-- Correct Login Icon -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+       viewBox="0 0 24 24" fill="currentColor">
+    <!-- Door on RIGHT -->
+    <path d="M21 3H11v2h10v14H11v2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/>
+    <!-- Arrow entering door -->
+    <path d="M13 12l-5-5v3H2v4h6v3l5-5z"/>
+  </svg>
 
-    <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Testimonials</a>
+  Login
+</a>
 
-    <a href="/admin/" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Admin</a>
+      {% endif %}
+    </div>
   </div>
-</nav>
-    </header>
 
-    <!-- Optional subnav / breadcrumbs slot -->
+  <!-- Mobile Nav -->
+  <nav x-show="mobileOpen" x-transition
+       class="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+
+    <div class="px-4 py-3 grid gap-2">
+
+      <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+         class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Repository</a>
+
+      <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+         class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Experts</a>
+
+      <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+         class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Webinars</a>
+
+      <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
+         class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Testimonials</a>
+
+      {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">
+            Logout
+          </button>
+        </form>
+
+        {% if request.user.is_superuser %}
+          <a href="/admin/"
+             class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Admin</a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'login' %}"
+           class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Login</a>
+      {% endif %}
+
+    </div>
+  </nav>
+</header>
+
+
+
+    <!-- Optional subnav -->
     {% block subnav %}{% endblock %}
 
-    <!-- Hero slot -->
+    <!-- Hero -->
     {% block hero %}{% endblock %}
 
-    <!-- Main -->
+    <!-- Main Content -->
     <main id="main" class="mx-auto max-w-7xl px-4 py-10">
       {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-  <div class="mx-auto max-w-7xl px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
-    <p class="text-sm text-slate-600 dark:text-slate-400">© {{ now|date:"Y" }} Knowledge Portal</p>
-    <div class="justify-self-end flex items-center gap-4 text-sm">
+      <div class="mx-auto max-w-7xl px-4 py-10 grid md:grid-cols-2 gap-6 items-center">
+        <p class="text-sm text-slate-600 dark:text-slate-400">© {{ now|date:"Y" }} SCACAF EHUB</p>
+        <div class="justify-self-end flex items-center gap-4 text-sm">
 
-      <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-         class="hover:text-brand-600">Repository</a>
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="hover:text-brand-600">Repository</a>
 
-      <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-         class="hover:text-brand-600">Experts</a>
+          <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+             class="hover:text-brand-600">Experts</a>
 
-      <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-         class="hover:text-brand-600">Webinars</a>
+          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+             class="hover:text-brand-600">Webinars</a>
 
-      <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-         class="hover:text-brand-600">Testimonials</a>
+          <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
+             class="hover:text-brand-600">Testimonials</a>
 
-    </div>
-  </div>
-</footer>
-    <!-- Toast / notifications -->
-    <div aria-live="polite" class="fixed bottom-4 right-4 space-y-2 z-50" x-data="{toasts:[]}" x-on:notify.window="toasts.push($event.detail); setTimeout(()=>toasts.shift(),4000)">
+        </div>
+      </div>
+    </footer>
+
+    <!-- Toasts -->
+    <div aria-live="polite" class="fixed bottom-4 right-4 space-y-2 z-50"
+         x-data="{toasts:[]}"
+         x-on:notify.window="toasts.push($event.detail); setTimeout(()=>toasts.shift(),4000)">
       <template x-for="t in toasts" :key="t.id">
-        <div class="px-4 py-3 rounded-xl shadow-soft border border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+        <div class="px-4 py-3 rounded-xl shadow-soft border border-slate-200 bg-white/90 dark:bg-slate-900/90">
           <p class="text-sm" x-text="t.message"></p>
         </div>
       </template>
     </div>
 
-    <!-- Global modal root (hook with Alpine/HTMX as needed) -->
     <div id="modal-root"></div>
 
     {% block extra_js %}{% endblock %}
-
-    <!-- Analytics placeholder -->
-    <!-- <script>/* your analytics here */</script> -->
   </body>
 </html>
