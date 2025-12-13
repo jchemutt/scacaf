@@ -1,0 +1,20 @@
+{% if embed_url %}
+  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <iframe
+      src="{{ embed_url }}"
+      width="100%"
+      height="600"
+      style="border:none;"
+      allowfullscreen>
+    </iframe>
+  </div>
+{% else %}
+  <p class="text-sm text-slate-500">
+    This document cannot be embedded right now. You can
+    {% if document %}
+      <a href="{{ document.url }}" class="text-brand-600 hover:underline">download it here</a>.
+    {% else %}
+      download the original document from the repository.
+    {% endif %}
+  </p>
+{% endif %}

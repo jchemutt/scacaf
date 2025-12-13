@@ -107,6 +107,58 @@ class ResourceTag(TaggedItemBase):
     )
 
 
+
+
+import urllib.parse
+from wagtail import blocks
+from wagtail.documents.blocks import DocumentChooserBlock
+
+import urllib.parse
+
+from django.conf import settings
+from wagtail import blocks
+from wagtail.documents.blocks import DocumentChooserBlock
+
+
+class OfficeEmbedBlock(blocks.StructBlock):
+    document = DocumentChooserBlock(required=True)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context)
+
+        doc = value.get("document")
+        request = (parent_context or {}).get("request")
+
+        embed_url = None
+
+        if doc:
+            # 1) Try to build an absolute URL from the request (if available)
+            if request is not None:
+                absolute_url = request.build_absolute_uri(doc.url)
+            # 2) Fallback: use WAGTAILADMIN_BASE_URL or similar setting
+            elif hasattr(settings, "WAGTAILADMIN_BASE_URL"):
+                absolute_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/") + doc.url
+            # 3) Last resort: use the relative URL (will still work for the iframe HTML,
+            #    but Office Online may not be able to fetch it if it's not public)
+            else:
+                absolute_url = doc.url
+
+            encoded = urllib.parse.quote(absolute_url, safe="")
+            embed_url = (
+                f"https://view.officeapps.live.com/op/embed.aspx?src={encoded}"
+            )
+
+        context["embed_url"] = embed_url
+        context["document"] = doc
+        return context
+
+    class Meta:
+        template = "blocks/office_embed.html"
+        icon = "doc-full"
+        label = "Office Document Viewer"
+
+
+
 # ============================================================
 #  HOME PAGE
 # ============================================================
@@ -268,6 +320,7 @@ class ResourcePage(Page, index.Indexed):
         ("document", DocumentChooserBlock(help_text="Inline extra document (optional)")),
         ("external_link", blocks.URLBlock(help_text="Inline extra URL (optional)")),
         ("embed", EmbedBlock(help_text="Embed video or webpage")),
+        ("office_viewer", OfficeEmbedBlock(help_text="Preview Word, PowerPoint, Excel inline")),
     ] + (
         [("video", VideoChooserBlock(help_text="Inline video (optional)"))] if HAS_MEDIA else []
     ),
