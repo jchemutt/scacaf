@@ -35,24 +35,35 @@
 
       <!-- CTAs -->
       <div class="mt-6 flex flex-wrap items-center gap-3">
-      <a href="{% slugurl 'repository' %}"
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 shadow-soft hover:shadow-md transition-all">
-        Browse resources
-        <svg class="w-4 h-4" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
-        </svg>
-      </a>
 
-      <a href="{% slugurl 'experts' %}"
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-        Community of Practice
-      </a>
+  <!-- Browse resources -->
+  <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 text-white font-medium 
+            hover:bg-brand-700 shadow-soft hover:shadow-md transition-all">
+    Browse resources
+    <svg class="w-4 h-4" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
+    </svg>
+  </a>
 
-      <a href="{% slugurl 'webinars' %}"
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-        Join a webinar
-      </a>
-    </div>
+  <!-- Community of Practice -->
+  <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700
+            bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium
+            hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+    Community of Practice
+  </a>
+
+  <!-- Join a webinar -->
+  <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700
+            bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium
+            hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+    Join a webinar
+  </a>
+
+</div>
+
 
 
       {% if repo_index %}

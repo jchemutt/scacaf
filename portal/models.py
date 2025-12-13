@@ -20,10 +20,11 @@ from wagtail.images.models import Image
 from django.core.exceptions import ValidationError
 from django.db.models.manager import BaseManager
 from django.db.models.query import QuerySet
+from django.db.models import F
 
 # Optional media (video/audio) support
 try:
-    from wagtailmedia.blocks import MediaChooserBlock
+    from wagtailmedia.blocks import VideoChooserBlock
     HAS_MEDIA = True
 except Exception:
     HAS_MEDIA = False
@@ -176,9 +177,10 @@ class RepositoryIndexPage(Page):
         context = super().get_context(request)
 
         qs = ResourcePage.objects.descendant_of(self).live().order_by(
-            "-date", "-last_published_at"
+            F("learning_order").asc(nulls_last=True),
+            "-date",
+            "-last_published_at",
         )
-
         q = request.GET.get("q")
         kind = request.GET.get("kind")
         topic = request.GET.get("topic")
@@ -236,6 +238,12 @@ class ResourcePage(Page, index.Indexed):
     kind = models.CharField(max_length=20, choices=Kind.choices)
     date = models.DateField(help_text="Resource date (publish/issue).")
     featured = models.BooleanField(default=False)
+    learning_order = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text=_("Optional sequence number for learning journey (1 = first).")
+    )
+
     abstract = RichTextField(blank=True)
 
     thumbnail = models.ForeignKey(
@@ -255,16 +263,17 @@ class ResourcePage(Page, index.Indexed):
     tags = ClusterTaggableManager(through=ResourceTag, blank=True)
 
     body = StreamField(
-        [
-            ("notes", blocks.RichTextBlock(features=["h2","h3","bold","italic","ol","ul","link","hr"])),
-            ("document", DocumentChooserBlock(help_text="Inline extra document (optional)")),
-            ("external_link", blocks.URLBlock(help_text="Inline extra URL (optional)")),
-            ("embed", EmbedBlock(help_text="Embed video or webpage")),
-        ] + ([("video", MediaChooserBlock(help_text="Inline media (optional)"))] if HAS_MEDIA else []),
-        use_json_field=True,
-        blank=True,
+    [
+        ("notes", blocks.RichTextBlock(features=["h2","h3","bold","italic","ol","ul","link","hr"])),
+        ("document", DocumentChooserBlock(help_text="Inline extra document (optional)")),
+        ("external_link", blocks.URLBlock(help_text="Inline extra URL (optional)")),
+        ("embed", EmbedBlock(help_text="Embed video or webpage")),
+    ] + (
+        [("video", VideoChooserBlock(help_text="Inline video (optional)"))] if HAS_MEDIA else []
+    ),
+    use_json_field=True,
+    blank=True,
     )
-
     # ---- Search ----
     search_fields = Page.search_fields + [
         index.SearchField("title", partial_match=True, boost=3.0),
@@ -284,6 +293,7 @@ class ResourcePage(Page, index.Indexed):
             FieldPanel("kind"),
             FieldPanel("date"),
             FieldPanel("featured"),
+            FieldPanel("learning_order"),
             FieldPanel("thumbnail"),
         ], heading="Basics"),
         FieldPanel("abstract"),
@@ -312,6 +322,65 @@ class ResourcePage(Page, index.Indexed):
     @property
     def primary_link(self):
         return self.links.first().url if self.links.exists() else None
+    
+
+    def _learning_sequence_qs(self):
+        """
+        All resources in the same repository (if any),
+        ordered by learning_order (NULLs last), then date & id for stability.
+        """
+        # We are already in models.py, so we can refer to RepositoryIndexPage directly
+        repo_root = self.get_ancestors().type(RepositoryIndexPage).last()
+
+        qs = ResourcePage.objects.live()
+
+        if repo_root:
+            qs = qs.descendant_of(repo_root)
+
+        return qs.order_by(
+            F("learning_order").asc(nulls_last=True),
+            "-date",
+            "-last_published_at",
+            "id",
+        )
+
+    def _learning_sequence_list(self):
+        """
+        Materialise the queryset into a list so we can use index-based previous/next.
+        """
+        return list(self._learning_sequence_qs())
+
+    @property
+    def previous_in_sequence(self):
+        """
+        Previous resource in the ordered learning sequence, or None.
+        """
+        seq = self._learning_sequence_list()
+        try:
+            idx = seq.index(self)
+        except ValueError:
+            # This page isn’t in the sequence list (should be rare)
+            return None
+
+        if idx == 0:
+            return None
+        return seq[idx - 1]
+
+    @property
+    def next_in_sequence(self):
+        """
+        Next resource in the ordered learning sequence, or None.
+        """
+        seq = self._learning_sequence_list()
+        try:
+            idx = seq.index(self)
+        except ValueError:
+            return None
+
+        if idx >= len(seq) - 1:
+            return None
+        return seq[idx + 1]
+
 
 
 class ResourceFile(Orderable):
@@ -479,7 +548,7 @@ class WebinarPage(Page, index.Indexed):
     languages = ParentalManyToManyField(Language, blank=True, related_name="webinars")
 
     recording = StreamField(
-        [("video", MediaChooserBlock())] if HAS_MEDIA else [],
+        [("video", VideoChooserBlock())] if HAS_MEDIA else [],
         use_json_field=True,
         blank=True,
     )

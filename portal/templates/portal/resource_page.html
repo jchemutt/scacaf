@@ -17,7 +17,17 @@
         </div>
       {% endif %}
       <div>
-        <p class="text-xs inline-flex px-2 py-1 rounded-md bg-black/60 text-white backdrop-blur">{{ page.get_kind_display }}</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <p class="text-xs inline-flex px-2 py-1 rounded-md bg-black/60 text-white backdrop-blur">
+            {{ page.get_kind_display }}
+          </p>
+          {% if page.learning_order %}
+            <p class="text-xs inline-flex px-2 py-1 rounded-md bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
+              Step {{ page.learning_order }}
+            </p>
+          {% endif %}
+        </div>
+
         <h1 class="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
         <p class="mt-2 text-slate-600 dark:text-slate-300">{{ page.date|date:"M j, Y" }}</p>
       </div>
@@ -57,18 +67,52 @@
         {{ page.body }}
       </div>
     {% endif %}
+
+ 
+    <hr class="mt-10 mb-6 border-slate-200/70 dark:border-slate-800/70">
+
+    <div class="flex flex-col sm:flex-row justify-between gap-3 items-center">
+      {% if page.previous_in_sequence %}
+        <a href="{{ page.previous_in_sequence.url }}"
+           class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-brand-600">
+          <span aria-hidden="true">←</span>
+          <span class="truncate max-w-xs">
+            Previous: {{ page.previous_in_sequence.title }}
+          </span>
+        </a>
+      {% else %}
+        <span class="text-xs text-slate-400">Start of learning sequence</span>
+      {% endif %}
+
+      {% if page.next_in_sequence %}
+        <a href="{{ page.next_in_sequence.url }}"
+           class="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700">
+          <span class="truncate max-w-xs text-right">
+            Next: {{ page.next_in_sequence.title }}
+          </span>
+          <span aria-hidden="true">→</span>
+        </a>
+      {% else %}
+        <span class="text-xs text-slate-400">End of learning sequence</span>
+      {% endif %}
+    </div>
   </article>
 
   <!-- Sidebar -->
   <aside class="lg:col-span-4">
     <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Downloads & Links</h2>
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        Downloads &amp; Links
+      </h2>
 
       {% if page.files.all %}
         <div class="mt-3 space-y-2">
           {% for f in page.files.all %}
-            <a href="{{ f.document.url }}" class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
-              <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20h14v-2H5v2zM11 4v8.17l-3.59-3.58L6 10l6 6 6-6-1.41-1.41L13 12.17V4h-2z"/></svg>
+            <a href="{{ f.document.url }}"
+               class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+              <svg class="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M5 20h14v-2H5v2zM11 4v8.17l-3.59-3.58L6 10l6 6 6-6-1.41-1.41L13 12.17V4h-2z"/>
+              </svg>
               <span class="text-sm">{{ f.label|default:f.document.title }}</span>
             </a>
           {% endfor %}
@@ -78,8 +122,11 @@
       {% if page.links.all %}
         <div class="mt-4 space-y-2">
           {% for l in page.links.all %}
-            <a href="{{ l.url }}" target="_blank" rel="noopener" class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
-              <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H5a2 2 0 0 0-2 2v5h2V5zm0 14v-5H3v5a2 2 0 0 0 2 2h5v-2H5z"/></svg>
+            <a href="{{ l.url }}" target="_blank" rel="noopener"
+               class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
+              <svg class="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H5a2 2 0 0 0-2 2v5h2V5zm0 14v-5H3v5a2 2 0 0 0 2 2h5v-2H5z"/>
+              </svg>
               <span class="text-sm">{{ l.label|default:l.url }}</span>
             </a>
           {% endfor %}
