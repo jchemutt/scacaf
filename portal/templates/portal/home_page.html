@@ -34,30 +34,33 @@
       </p>
 
       <!-- CTAs -->
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft hover:shadow-lg transition-transform duration-150 motion-safe:hover:-translate-y-0.5">
-          Browse resources
-          <svg class="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
-          </svg>
-        </a>
-        <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors transition-transform duration-150 motion-safe:hover:-translate-y-0.5">
-          Meet the community of practice
-        </a>
-        <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors transition-transform duration-150 motion-safe:hover:-translate-y-0.5">
-          Join a webinar
-        </a>
-      </div>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+      <a href="{% slugurl 'repository' %}"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 shadow-soft hover:shadow-md transition-all">
+        Browse resources
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
+        </svg>
+      </a>
+
+      <a href="{% slugurl 'experts' %}"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+        Community of Practice
+      </a>
+
+      <a href="{% slugurl 'webinars' %}"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+        Join a webinar
+      </a>
+    </div>
+
 
       {% if repo_index %}
       <!-- Quick search -->
       <form action="{{ repo_index.url }}" method="get" class="mt-6" x-data>
         <label class="relative block">
           <span class="sr-only">Search the repository</span>
-          <input name="q" placeholder="Search climate rationale, ToC, VfM, MEL…"
+          <input name="q" placeholder="Search the repository…"
                  class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft outline-none focus:ring-2 focus:ring-brand-500"
                  data-global-search autocomplete="off">
           <button class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white text-sm">
