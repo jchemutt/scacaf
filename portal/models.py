@@ -158,6 +158,13 @@ class OfficeEmbedBlock(blocks.StructBlock):
         label = "Office Document Viewer"
 
 
+class PDFEmbedBlock(blocks.StructBlock):
+    document = DocumentChooserBlock(required=True, help_text="Upload a PDF document")
+
+    class Meta:
+        template = "blocks/pdf_embed.html"
+        icon = "doc-full"
+        label = "PDF Viewer"
 
 # ============================================================
 #  HOME PAGE
@@ -321,6 +328,7 @@ class ResourcePage(Page, index.Indexed):
         ("external_link", blocks.URLBlock(help_text="Inline extra URL (optional)")),
         ("embed", EmbedBlock(help_text="Embed video or webpage")),
         ("office_viewer", OfficeEmbedBlock(help_text="Preview Word, PowerPoint, Excel inline")),
+        ("pdf_viewer", PDFEmbedBlock(help_text="Preview pdf")),
     ] + (
         [("video", VideoChooserBlock(help_text="Inline video (optional)"))] if HAS_MEDIA else []
     ),
