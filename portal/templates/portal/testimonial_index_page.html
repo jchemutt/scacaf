@@ -1,44 +1,110 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags %}
 
-{% block title %}Impact stories | SCACAF e-Hub{% endblock %}
+{% block title %}Impact stories | SCACAF E-Hub{% endblock %}
 
 {% block hero %}
-<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
-  <div class="mx-auto max-w-7xl px-4 py-12">
-    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Impact stories</h1>
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
+    <div class="absolute inset-0
+                [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
+                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-10">
+    <p class="text-xs font-semibold tracking-wide text-brand-600 uppercase">
+      Voices from the field
+    </p>
+    <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">Impact stories</h1>
+
     {% if page.intro %}
-      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300">{{ page.intro|richtext }}</p>
+      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300 max-w-3xl">
+        {{ page.intro|richtext }}
+      </p>
+    {% else %}
+      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300 max-w-3xl">
+        How capacity support, climate finance readiness, and project development are making a difference
+        for practitioners and institutions across Africa.
+      </p>
     {% endif %}
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="grid lg:grid-cols-[240px,1fr] gap-8">
+<div class="grid lg:grid-cols-[260px,1fr] gap-8">
+
   <!-- Filters -->
-  <aside class="space-y-4">
+  <aside class="lg:sticky lg:top-24 space-y-4 h-fit">
     <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
-      <h2 class="text-sm font-semibold text-slate-500 dark:text-slate-400">Filter by topic</h2>
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+          Filter by topic
+        </h2>
+        {% if testimonials.count %}
+          <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            {{ testimonials.count }} story{{ testimonials.count|pluralize }}
+          </span>
+        {% endif %}
+      </div>
+
       <div class="mt-3 flex flex-wrap gap-2">
+        <!-- All -->
         <a href="{{ page.url }}"
-           class="px-3 py-1.5 rounded-full text-sm border
-                  {% if not request.GET.topic %}border-brand-600 text-brand-700 bg-brand-50 dark:bg-slate-800 dark:text-brand-300{% else %}border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">
+           class="px-3 py-1.5 rounded-full text-xs sm:text-sm border
+                  {% if not request.GET.topic %}
+                    border-brand-600 text-brand-700 bg-brand-50
+                    dark:bg-slate-800 dark:text-brand-300
+                  {% else %}
+                    border-slate-200 dark:border-slate-700
+                    text-slate-600 dark:text-slate-300
+                    hover:bg-slate-50 dark:hover:bg-slate-800
+                  {% endif %}">
           All
         </a>
+
+        <!-- Topics -->
         {% for t in topics %}
           <a href="{{ page.url }}?topic={{ t.name|urlencode }}"
-             class="px-3 py-1.5 rounded-full text-sm border
-                    {% if request.GET.topic == t.name %}border-brand-600 text-brand-700 bg-brand-50 dark:bg-slate-800 dark:text-brand-300{% else %}border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">
+             class="px-3 py-1.5 rounded-full text-xs sm:text-sm border
+                    {% if request.GET.topic == t.name %}
+                      border-brand-600 text-brand-700 bg-brand-50
+                      dark:bg-slate-800 dark:text-brand-300
+                    {% else %}
+                      border-slate-200 dark:border-slate-700
+                      text-slate-600 dark:text-slate-300
+                      hover:bg-slate-50 dark:hover:bg-slate-800
+                    {% endif %}">
             {{ t.name }}
           </a>
         {% endfor %}
       </div>
+
+      {% if request.GET.topic %}
+        <div class="mt-3 text-[11px] text-slate-500 dark:text-slate-400">
+          Showing stories tagged with <span class="font-medium">“{{ request.GET.topic }}”</span>.
+          <a href="{{ page.url }}" class="ml-1 underline hover:text-brand-600">
+            Clear filter
+          </a>
+        </div>
+      {% endif %}
     </div>
   </aside>
 
   <!-- Cards -->
   <section>
+    <div class="flex items-baseline justify-between gap-4 mb-4">
+      <h2 class="text-lg font-semibold">Stories</h2>
+      <div class="text-sm text-slate-500">
+        {% if testimonials.count %}
+          {{ testimonials.count }} story{{ testimonials.count|pluralize }}
+        {% else %}
+          0 stories
+        {% endif %}
+      </div>
+    </div>
+
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% if testimonials %}
         {% for t in testimonials %}
@@ -48,7 +114,7 @@
         <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
           <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">💬</div>
           <p class="font-medium">No testimonials yet</p>
-         
+          <p class="text-sm mt-1">Once stories are added, they’ll appear here by topic.</p>
         </div>
       {% endif %}
     </div>

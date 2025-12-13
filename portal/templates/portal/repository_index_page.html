@@ -1,26 +1,60 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block title %}Repository | SCACAF e-Hub{% endblock %}
+{% block title %}Repository | SCACAF E-Hub{% endblock %}
 
 {% block hero %}
 <section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
   <div class="absolute inset-0">
     <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)] bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
+                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
   </div>
-  <div class="relative mx-auto max-w-7xl px-4 py-10">
-    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Repository</h1>
-    <p class="mt-2 text-slate-600 dark:text-slate-300">Documents, tools, datasets, videos, and templates.</p>
-    <form method="get" class="mt-6 max-w-2xl">
-      <label class="relative block">
-        <span class="sr-only">Search</span>
-        <input name="q" value="{{ request.GET.q|default_if_none:'' }}" placeholder="Search resources (title, abstract, tags)…"
-               class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft outline-none focus:ring-2 focus:ring-brand-500"
-               autocomplete="off">
-        <button class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white text-sm">Search</button>
-      </label>
-    </form>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold tracking-wide text-brand-600 uppercase">
+          Repository
+        </p>
+        <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">
+          Resources for climate adaptation finance
+        </h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-300">
+          Documents, tools, datasets, videos, and templates curated for the SCACAF E-Hub community.
+        </p>
+      </div>
+
+      <!-- Search -->
+      <form method="get" class="w-full md:max-w-md">
+        <!-- Preserve filters when searching -->
+        {% if request.GET.kind %}<input type="hidden" name="kind" value="{{ request.GET.kind }}">{% endif %}
+        {% if request.GET.topic %}<input type="hidden" name="topic" value="{{ request.GET.topic }}">{% endif %}
+        {% if request.GET.audience %}<input type="hidden" name="audience" value="{{ request.GET.audience }}">{% endif %}
+        {% if request.GET.region %}<input type="hidden" name="region" value="{{ request.GET.region }}">{% endif %}
+        {% if request.GET.language %}<input type="hidden" name="language" value="{{ request.GET.language }}">{% endif %}
+
+        <label class="relative block">
+          <span class="sr-only">Search repository</span>
+          <input
+            name="q"
+            value="{{ request.GET.q|default_if_none:'' }}"
+            placeholder="Search resources (title, abstract, tags)…"
+            class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                   bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft
+                   outline-none focus:ring-2 focus:ring-brand-500"
+            autocomplete="off">
+          <button
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl
+                   bg-brand-600 text-white text-sm">
+            Search
+          </button>
+        </label>
+        <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+          Tip: use keywords like <span class="font-semibold">“rationale”</span>, <span class="font-semibold">“ToC”</span>, or <span class="font-semibold">“VfM”</span>.
+        </p>
+      </form>
+    </div>
   </div>
 </section>
 {% endblock %}
@@ -30,87 +64,202 @@
 
   <!-- Filters -->
   <aside class="lg:col-span-3">
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sticky top-24">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Filter</h2>
-      <form method="get" class="mt-3 space-y-4">
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-5 sticky top-24 bg-white/70 dark:bg-slate-950/70 backdrop-blur">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Filters
+        </h2>
 
-        <!-- Kind -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Type</label>
-          <select name="kind" class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
-            <option value="">All types</option>
-            {% for k, label in page.specific.ResourcePage.Kind.choices %}
-              <option value="{{ k }}" {% if request.GET.kind == k %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
+        {% if request.GET.kind or request.GET.topic or request.GET.audience or request.GET.region or request.GET.language or request.GET.q %}
+          <a href="{{ page.url }}" class="text-xs text-brand-600 hover:underline">
+            Clear all
+          </a>
+        {% endif %}
+      </div>
 
-        <!-- Topic -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Topic</label>
-          <select name="topic" class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
-            <option value="">All topics</option>
-            {% for t in topics %}
-              <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>{{ t.name }}</option>
-            {% endfor %}
-          </select>
+      <!-- Active filters as chips -->
+      {% if request.GET.kind or request.GET.topic or request.GET.audience or request.GET.region or request.GET.language %}
+        <div class="mt-3 flex flex-wrap gap-2">
+          {% if request.GET.kind %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+              Type: {{ request.GET.kind }}
+            </span>
+          {% endif %}
+          {% if request.GET.topic %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+              Topic: {{ request.GET.topic }}
+            </span>
+          {% endif %}
+          {% if request.GET.audience %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+              Audience: {{ request.GET.audience }}
+            </span>
+          {% endif %}
+          {% if request.GET.region %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+              Region: {{ request.GET.region }}
+            </span>
+          {% endif %}
+          {% if request.GET.language %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+              Language: {{ request.GET.language }}
+            </span>
+          {% endif %}
         </div>
+      {% endif %}
 
-        <!-- Audience -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Audience</label>
-          <select name="audience" class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
-            <option value="">All audiences</option>
-            {% for a in audiences %}
-              <option value="{{ a.name }}" {% if request.GET.audience == a.name %}selected{% endif %}>{{ a.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- Region -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Region</label>
-          <select name="region" class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
-            <option value="">All regions</option>
-            {% for r in regions %}
-              <option value="{{ r.name }}" {% if request.GET.region == r.name %}selected{% endif %}>{{ r.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- Language -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Language</label>
-          <select name="language" class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
-            <option value="">All languages</option>
-            {% for lang in languages %}
-              <option value="{{ lang.code }}" {% if request.GET.language == lang.code %}selected{% endif %}>
-                {{ lang.name }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
+      <form method="get" class="mt-4 space-y-4">
 
         <!-- Keep q across filters -->
         {% if request.GET.q %}
           <input type="hidden" name="q" value="{{ request.GET.q }}">
         {% endif %}
 
-        <div class="pt-2 flex items-center gap-2">
-          <button class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm">Apply</button>
-          <a href="{{ page.url }}" class="text-sm text-slate-500 hover:underline">Reset</a>
+        <!-- Group 1: What are you looking for? -->
+        <div class="space-y-3">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            What are you looking for?
+          </p>
+
+          <!-- Kind -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              Type
+            </label>
+            <select
+              name="kind"
+              class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+              <option value="">All types</option>
+              {% for k, label in page.specific.ResourcePage.Kind.choices %}
+                <option value="{{ k }}" {% if request.GET.kind == k %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Topic -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              Topic
+            </label>
+            <select
+              name="topic"
+              class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+              <option value="">All topics</option>
+              {% for t in topics %}
+                <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>
+                  {{ t.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
+
+        <hr class="border-slate-200/70 dark:border-slate-800/70">
+
+        <!-- Group 2: Who & where -->
+        <div class="space-y-3">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Who &amp; where
+          </p>
+
+          <!-- Audience -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              Audience
+            </label>
+            <select
+              name="audience"
+              class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+              <option value="">All audiences</option>
+              {% for a in audiences %}
+                <option value="{{ a.name }}" {% if request.GET.audience == a.name %}selected{% endif %}>
+                  {{ a.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Region -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              Region
+            </label>
+            <select
+              name="region"
+              class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+              <option value="">All regions</option>
+              {% for r in regions %}
+                <option value="{{ r.name }}" {% if request.GET.region == r.name %}selected{% endif %}>
+                  {{ r.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <hr class="border-slate-200/70 dark:border-slate-800/70">
+
+        <!-- Group 3: Language -->
+        <div class="space-y-3">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Language
+          </p>
+
+          <!-- Language -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              Language
+            </label>
+            <select
+              name="language"
+              class="w-full rounded-lg border border-slate-300/70 dark:border-slate-700
+                     bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+              <option value="">All languages</option>
+              {% for lang in languages %}
+                <option value="{{ lang.code }}" {% if request.GET.language == lang.code %}selected{% endif %}>
+                  {{ lang.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center gap-2 justify-between">
+          <button
+            class="inline-flex items-center justify-center px-3 py-2 rounded-lg
+                   bg-brand-600 text-white text-sm font-medium hover:bg-brand-700
+                   shadow-soft hover:shadow-md transition">
+            Apply filters
+          </button>
+
+          <a href="{{ page.url }}" class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-200">
+            Reset
+          </a>
+        </div>
+
       </form>
     </div>
   </aside>
 
   <!-- Results -->
   <section class="lg:col-span-9">
-    <div class="flex items-baseline justify-between gap-4">
-      <h2 class="text-lg font-semibold">Results</h2>
-      <div class="text-sm text-slate-500">
-        {% if resources.count %}{{ resources.count }} item{{ resources.count|pluralize }}{% else %}0 items{% endif %}
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-lg font-semibold">Results</h2>
+        <p class="text-xs text-slate-500 mt-0.5">
+          {% if resources.count %}
+            Showing {{ resources.count }} item{{ resources.count|pluralize }}.
+          {% else %}
+            No resources match your current filters.
+          {% endif %}
+        </p>
       </div>
+
+     
     </div>
 
     <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -122,7 +271,7 @@
         <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
           <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📦</div>
           <p class="font-medium">No resources found</p>
-          <p class="text-sm mt-1">Try adjusting filters.</p>
+          <p class="text-sm mt-1">Try adjusting the search or filters on the left.</p>
         </div>
       {% endif %}
     </div>

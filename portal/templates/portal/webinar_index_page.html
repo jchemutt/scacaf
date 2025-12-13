@@ -1,74 +1,179 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags %}
 
-{% block title %}Webinars | SCACAF e-Hub{% endblock %}
+{% block title %}Webinars | SCACAF E-Hub{% endblock %}
 
 {% block hero %}
-<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
-  <div class="mx-auto max-w-7xl px-4 py-12">
-    <div class="flex items-start justify-between gap-6">
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
+    <div class="absolute inset-0
+                [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
+                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-10 space-y-6">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Webinars</h1>
+        <p class="text-xs font-semibold tracking-wide text-brand-600 uppercase">
+          Learning series
+        </p>
+        <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">
+          Webinars &amp; learning sessions
+        </h1>
         {% if page.intro %}
-          <p class="mt-3 text-lg text-slate-600 dark:text-slate-300">{{ page.intro|richtext }}</p>
+          <div class="mt-2 text-slate-600 dark:text-slate-300 max-w-2xl">
+            {{ page.intro|richtext }}
+          </div>
+        {% else %}
+          <p class="mt-2 text-slate-600 dark:text-slate-300 max-w-2xl">
+            Live and recorded sessions on climate finance, climate rationale, MEL, Theory of Change,
+            and practical steps for turning ideas into bankable adaptation investments.
+          </p>
         {% endif %}
       </div>
 
-      <!-- When tabs -->
+      <!-- Upcoming / Past tabs -->
       <div class="shrink-0">
-        <div class="inline-flex rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-        {% with when=request.GET.when %}
-  <a href="{{ page.url }}"
-     class="px-3 py-2 text-sm {% if not when or when != 'past' %}bg-brand-600 text-white{% endif %}">
-    Upcoming
-  </a>
-  <a href="{{ page.url }}?when=past"
-     class="px-3 py-2 text-sm {% if when == 'past' %}bg-brand-600 text-white{% endif %}">
-    Past
-  </a>
-{% endwith %}
+        <div class="inline-flex rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 overflow-hidden">
+          {% with when=request.GET.when %}
+            <a href="{{ page.url }}"
+               class="px-4 py-2 text-sm font-medium
+                      {% if not when or when != 'past' %}
+                        bg-brand-600 text-white
+                      {% else %}
+                        text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800
+                      {% endif %}">
+              Upcoming
+            </a>
+            <a href="{{ page.url }}?when=past"
+               class="px-4 py-2 text-sm font-medium
+                      {% if when == 'past' %}
+                        bg-brand-600 text-white
+                      {% else %}
+                        text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800
+                      {% endif %}">
+              Past
+            </a>
+          {% endwith %}
         </div>
       </div>
     </div>
 
     <!-- Search + Topic filter -->
-    <form method="get" action="{{ page.url }}" class="mt-6 grid md:grid-cols-[1fr,auto] gap-3">
+    <form method="get" action="{{ page.url }}" class="grid md:grid-cols-[1.6fr,auto] gap-3">
+      <!-- Search -->
       <div>
         <label class="relative block">
           <span class="sr-only">Search webinars</span>
-          <input name="q" value="{{ request.GET.q }}"
-                 placeholder="Search webinars (topics, title…) "
-                 class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-10 py-2.5 shadow-soft outline-none focus:ring-2 focus:ring-brand-500">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z"/></svg>
+          <input
+            name="q"
+            value="{{ request.GET.q|default_if_none:'' }}"
+            placeholder="Search webinars (title, topic, speakers…) "
+            class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                   bg-white/80 dark:bg-slate-900/60 px-10 py-2.5 shadow-soft
+                   outline-none focus:ring-2 focus:ring-brand-500">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                  d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20 15.5 14zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z"/>
+          </svg>
         </label>
       </div>
-      <div class="flex gap-2">
-        <select name="topic" class="rounded-xl border border-slate-300/70 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-900">
+
+      <!-- Topic + actions -->
+      <div class="flex flex-wrap items-center gap-2 justify-end">
+        <select
+          name="topic"
+          class="rounded-xl border border-slate-300/70 dark:border-slate-700
+                 bg-white dark:bg-slate-900 px-3 py-2 text-sm min-w-[10rem]">
           <option value="">All topics</option>
           {% for t in topics %}
-            <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>{{ t.name }}</option>
+            <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>
+              {{ t.name }}
+            </option>
           {% endfor %}
         </select>
-        {% if request.GET.when %}<input type="hidden" name="when" value="{{ request.GET.when }}">{% endif %}
-        <button class="px-4 rounded-xl bg-brand-600 text-white">Filter</button>
+
+        {# Preserve when param #}
+        {% if request.GET.when %}
+          <input type="hidden" name="when" value="{{ request.GET.when }}">
+        {% endif %}
+
+        <button
+          class="px-4 py-2 rounded-xl bg-brand-600 text-white text-sm font-medium
+                 hover:bg-brand-700 shadow-soft hover:shadow-md transition">
+          Apply
+        </button>
+
+        {% if request.GET.q or request.GET.topic or request.GET.when %}
+          <a href="{{ page.url }}" class="text-xs text-slate-500 hover:underline">
+            Reset
+          </a>
+        {% endif %}
       </div>
     </form>
+
+    <!-- Active filter chips -->
+    {% if request.GET.q or request.GET.topic or request.GET.when %}
+      <div class="pt-1 flex flex-wrap gap-2 text-[11px]">
+        {% if request.GET.q %}
+          <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                       bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+            Search: “{{ request.GET.q }}”
+          </span>
+        {% endif %}
+        {% if request.GET.topic %}
+          <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                       bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
+            Topic: {{ request.GET.topic }}
+          </span>
+        {% endif %}
+        {% with when=request.GET.when %}
+          {% if when == 'past' %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                         bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+              Showing: Past webinars
+            </span>
+          {% elif when %}
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                         bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+              When: {{ when }}
+            </span>
+          {% endif %}
+        {% endwith %}
+      </div>
+    {% endif %}
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
 <section>
+  <div class="flex items-baseline justify-between gap-4 mb-4">
+    <h2 class="text-lg font-semibold">
+      {% if request.GET.when == 'past' %}Past webinars{% else %}Upcoming webinars{% endif %}
+    </h2>
+    <div class="text-sm text-slate-500">
+      {% if webinars.count %}
+        {{ webinars.count }} session{{ webinars.count|pluralize }}
+      {% else %}
+        0 sessions
+      {% endif %}
+    </div>
+  </div>
+
   <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {% if webinars %}
       {% for w in webinars %}
-       {% include "portal/includes/webinar_card.html" with webinar=w %}
-     {% endfor %}
+        {% include "portal/includes/webinar_card.html" with webinar=w %}
+      {% endfor %}
     {% else %}
       <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
         <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎥</div>
         <p class="font-medium">No webinars found</p>
-        <p class="text-sm mt-1">Try a different topic or switch between Upcoming and Past.</p>
+        <p class="text-sm mt-1">
+          Try adjusting your search, changing topic, or switching between Upcoming and Past.
+        </p>
       </div>
     {% endif %}
   </div>

@@ -1,71 +1,155 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block title %}Experts | SCACAF e-Hub{% endblock %}
+{% block title %}Experts | SCACAF E-Hub{% endblock %}
 
 {% block hero %}
 <section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
   <div class="absolute inset-0">
     <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)] bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+    <div class="absolute inset-0
+                [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
+                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
   </div>
 
   <div class="relative mx-auto max-w-7xl px-4 py-10">
-    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Experts</h1>
-    <p class="mt-2 text-slate-600 dark:text-slate-300">
-      Practitioners and researchers in climate finance, rationale, MEL, ToC, and more.
-    </p>
-
-    <!-- Search / quick filter -->
-    <form method="get" class="mt-6 grid md:grid-cols-4 gap-3 max-w-none">
-      <!-- q -->
-      <label class="relative block md:col-span-2">
-        <span class="sr-only">Search experts</span>
-        <input name="q" value="{{ request.GET.q|default_if_none:'' }}"
-               placeholder="Search by name, organization, role, languages…"
-               class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft outline-none focus:ring-2 focus:ring-brand-500">
-        <button class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white text-sm">
-          Search
-        </button>
-      </label>
-
-      <!-- topic -->
-      <select name="topic" class="rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3">
-        <option value="">All topics</option>
-        {% for t in topics %}
-          <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>{{ t.name }}</option>
-        {% endfor %}
-      </select>
-
-      <!-- region -->
-      <select name="region" class="rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3">
-        <option value="">All regions</option>
-        {% for r in regions %}
-          <option value="{{ r.name }}" {% if request.GET.region == r.name %}selected{% endif %}>{{ r.name }}</option>
-        {% endfor %}
-      </select>
-
-      <!-- language (free text; matches languages__icontains) -->
-      <input name="language" value="{{ request.GET.language|default_if_none:'' }}"
-             placeholder="Language (e.g., English, Portuguese)"
-             class="md:col-span-2 rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3">
-
-      <!-- keep q across changes if needed is already in form values -->
-      <div class="md:col-span-2 flex items-center gap-3">
-        <button class="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm">Apply filters</button>
-        <a href="{{ page.url }}" class="text-sm text-slate-500 hover:underline">Reset</a>
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <div>
+        <p class="text-xs font-semibold tracking-wide text-brand-600 uppercase">
+          Expert directory
+        </p>
+        <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">
+          Climate finance community of practice
+        </h1>
+        <p class="mt-2 text-slate-600 dark:text-slate-300 max-w-2xl">
+          Practitioners and researchers working on climate finance, climate rationale, MEL, Theory of Change,
+          proposal design, and implementation support across Africa and beyond.
+        </p>
       </div>
-    </form>
+
+      <!-- Search + quick filters -->
+      <form method="get" class="w-full md:max-w-xl space-y-3">
+        <!-- Search -->
+        <label class="relative block">
+          <span class="sr-only">Search experts</span>
+          <input
+            name="q"
+            value="{{ request.GET.q|default_if_none:'' }}"
+            placeholder="Search by name, organization, role, topic, language…"
+            class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                   bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft
+                   outline-none focus:ring-2 focus:ring-brand-500">
+          <button
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl
+                   bg-brand-600 text-white text-sm">
+            Search
+          </button>
+        </label>
+
+        <!-- Filters row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <!-- Topic -->
+          <select
+            name="topic"
+            class="rounded-xl border border-slate-300/70 dark:border-slate-700
+                   bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+            <option value="">All topics</option>
+            {% for t in topics %}
+              <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>
+                {{ t.name }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <!-- Region -->
+          <select
+            name="region"
+            class="rounded-xl border border-slate-300/70 dark:border-slate-700
+                   bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+            <option value="">All regions</option>
+            {% for r in regions %}
+              <option value="{{ r.name }}" {% if request.GET.region == r.name %}selected{% endif %}>
+                {{ r.name }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <!-- Language -->
+          <input
+            name="language"
+            value="{{ request.GET.language|default_if_none:'' }}"
+            placeholder="Language (e.g. English, Portuguese)"
+            class="rounded-xl border border-slate-300/70 dark:border-slate-700
+                   bg-white dark:bg-slate-900 px-3 py-2 text-sm">
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-between gap-3 pt-1">
+          <button
+            class="inline-flex items-center justify-center px-4 py-2 rounded-lg
+                   bg-brand-600 text-white text-sm font-medium hover:bg-brand-700
+                   shadow-soft hover:shadow-md transition">
+            Apply filters
+          </button>
+
+          <div class="flex items-center gap-3 text-xs text-slate-500">
+            {% if request.GET.topic or request.GET.region or request.GET.language or request.GET.q %}
+              <a href="{{ page.url }}" class="hover:underline">Clear all</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Active filter chips -->
+        {% if request.GET.topic or request.GET.region or request.GET.language %}
+          <div class="flex flex-wrap gap-2 pt-1">
+            {% if request.GET.topic %}
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                           bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+                Topic: {{ request.GET.topic }}
+              </span>
+            {% endif %}
+            {% if request.GET.region %}
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                           bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+                Region: {{ request.GET.region }}
+              </span>
+            {% endif %}
+            {% if request.GET.language %}
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full
+                           bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+                Language: {{ request.GET.language }}
+              </span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="flex items-baseline justify-between gap-4">
-  <h2 class="text-lg font-semibold">Directory</h2>
-  <div class="text-sm text-slate-500">
-    {% if experts.count %}{{ experts.count }} expert{{ experts.count|pluralize }}{% else %}0 experts{% endif %}
+<div class="flex flex-wrap items-baseline justify-between gap-4">
+  <div>
+    <h2 class="text-lg font-semibold">Directory</h2>
+    <p class="text-xs text-slate-500 mt-0.5">
+      {% if experts.count %}
+        Showing {{ experts.count }} expert{{ experts.count|pluralize }}.
+      {% else %}
+        No experts match your current search or filters.
+      {% endif %}
+    </p>
   </div>
+
+  
+  <div>
+    <label class="sr-only">Sort by</label>
+    <select class="rounded-lg border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm">
+      <option>Sort: A–Z</option>
+      <option>Sort: Most recent</option>
+    </select>
+  </div>
+
 </div>
 
 <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -73,19 +157,28 @@
     {% for e in experts %}
       <!-- Expert card -->
       <a href="{{ e.url }}"
-         class="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft overflow-hidden hover:shadow-lg hover:border-brand-500 transition-all duration-300">
+         class="group block rounded-2xl border border-slate-200 dark:border-slate-800
+                bg-white dark:bg-slate-900 shadow-soft overflow-hidden
+                hover:shadow-lg hover:border-brand-500 transition-all duration-300">
         <div class="flex gap-4 p-4">
           <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
             {% if e.photo %}
               {% image e.photo fill-128x128 class="w-full h-full object-cover" %}
             {% else %}
               <div class="w-full h-full grid place-items-center text-slate-400">
-                <svg class="w-8 h-8 opacity-60" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/></svg>
+                <svg class="w-8 h-8 opacity-60" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                        d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/>
+                </svg>
               </div>
             {% endif %}
           </div>
+
           <div class="min-w-0">
-            <h3 class="text-base font-semibold line-clamp-1 group-hover:text-brand-600">{{ e.title }}</h3>
+            <h3 class="text-base font-semibold line-clamp-1 group-hover:text-brand-600">
+              {{ e.title }}
+            </h3>
+
             {% if e.role or e.organization %}
               <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
                 {{ e.role }}{% if e.role and e.organization %} · {% endif %}{{ e.organization }}
@@ -93,16 +186,23 @@
             {% endif %}
 
             <!-- Expertise / regions / languages chips -->
-            <div class="mt-2 flex flex-wrap gap-1">
+            <div class="mt-2 flex flex-wrap gap-1.5">
               {% for tp in e.expertise.all|slice:":2" %}
-                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">{{ tp.name }}</span>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">
+                  {{ tp.name }}
+                </span>
               {% endfor %}
               {% if e.expertise.all|length > 2 %}
-                <span class="text-[11px] text-slate-500">+{{ e.expertise.all|length|add:"-2" }}</span>
+                <span class="text-[11px] text-slate-500">
+                  +{{ e.expertise.all|length|add:"-2" }} more
+                </span>
               {% endif %}
 
               {% for rg in e.regions.all|slice:":1" %}
-                <span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-[11px]">{{ rg.name }}</span>
+                <span class="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700
+                             dark:bg-slate-800 dark:text-brand-300 text-[11px]">
+                  {{ rg.name }}
+                </span>
               {% endfor %}
 
               {% if e.languages %}
@@ -115,7 +215,9 @@
         </div>
 
         <div class="px-4 pb-4 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-end">
-          <span class="inline-flex items-center gap-1 group-hover:text-brand-600">View profile →</span>
+          <span class="inline-flex items-center gap-1 group-hover:text-brand-600">
+            View profile →
+          </span>
         </div>
       </a>
     {% endfor %}
@@ -123,7 +225,7 @@
     <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
       <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🧑‍💼</div>
       <p class="font-medium">No experts found</p>
-      <p class="text-sm mt-1">Adjust filters.</p>
+      <p class="text-sm mt-1">Try broadening your search or clearing filters.</p>
     </div>
   {% endif %}
 </div>
