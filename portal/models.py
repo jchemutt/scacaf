@@ -201,11 +201,37 @@ class HomePage(Page):
                 .order_by("-date", "-last_published_at")[:6]
             )
 
+        # ------------------------------------------------------------
+        # Home page summary counts (for the stat cards section)
+        # ------------------------------------------------------------
+        resource_count = (
+            ResourcePage.objects.descendant_of(repo_index).live().count()
+            if repo_index else ResourcePage.objects.live().count()
+        )
+        webinar_count = (
+            WebinarPage.objects.descendant_of(webinars_index).live().count()
+            if webinars_index else WebinarPage.objects.live().count()
+        )
+        expert_count = (
+            ExpertPage.objects.descendant_of(experts_index).live().count()
+            if experts_index else ExpertPage.objects.live().count()
+        )
+        testimonial_count = (
+            TestimonialPage.objects.descendant_of(testimonials_index).live().count()
+            if testimonials_index else TestimonialPage.objects.live().count()
+        )
+
         context.update({
             "repo_index": repo_index,
             "experts_index": experts_index,
             "webinars_index": webinars_index,
             "testimonials_index": testimonials_index,
+
+            # Summary counts
+            "resource_count": resource_count,
+            "webinar_count": webinar_count,
+            "expert_count": expert_count,
+            "testimonial_count": testimonial_count,
 
             "featured_resources": featured_resources,
 

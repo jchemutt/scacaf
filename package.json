@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:css": "npx tailwindcss -c tailwind.config.js -i ./knowledge_portal/static/css/tailwind.css -o ./knowledge_portal/static/css/main.css --minify",
+    "watch:css": "npx tailwindcss -c tailwind.config.js -i ./knowledge_portal/static/css/tailwind.css -o ./knowledge_portal/static/css/main.css --watch"
   },
   "keywords": [],
   "author": "",
