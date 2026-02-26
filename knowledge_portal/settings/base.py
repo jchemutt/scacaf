@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -83,6 +84,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "portal.context_processors.portal_index_pages",
+                "wagtail.contrib.settings.context_processors.settings",
             ],
         },
     },
@@ -104,6 +106,28 @@ DATABASES = {
         "PORT": str(data["postgres_port"]),
     }
 }
+
+# Email settings
+EMAIL_BACKEND = data.get(
+    "email_backend",
+    "django.core.mail.backends.smtp.EmailBackend"
+)
+
+EMAIL_HOST = data.get("email_host", "localhost")
+EMAIL_PORT = int(data.get("email_port", 25))
+
+EMAIL_USE_TLS = bool(data.get("email_use_tls", False))
+EMAIL_USE_SSL = bool(data.get("email_use_ssl", False))
+
+EMAIL_HOST_USER = data.get("email_host_user", "")
+EMAIL_HOST_PASSWORD = data.get("email_host_password", "")
+
+DEFAULT_FROM_EMAIL = data.get("default_from_email", "no-reply@localhost")
+SERVER_EMAIL = data.get("server_email", DEFAULT_FROM_EMAIL)
+
+# Optional (useful for admin error emails / absolute links in emails)
+# You can also move this to data.json if you want
+WAGTAILADMIN_BASE_URL = data.get("site_url", "http://localhost:8000")
 
 
 # Password validation

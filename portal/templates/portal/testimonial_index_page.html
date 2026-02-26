@@ -3,121 +3,257 @@
 
 {% block title %}Impact stories | SCACAF E-Hub{% endblock %}
 
+{% block extra_head %}
+<style>
+  .story-grid {
+    grid-auto-rows: 1fr;
+  }
+  .story-card-shell {
+    display: flex;
+    height: 100%;
+    min-height: 100%;
+  }
+  .story-card-shell > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  .story-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+  }
+
+  /* Make richtext intro inherit hero styling cleanly */
+  .hero-intro :where(p) {
+    margin: 0;
+  }
+</style>
+{% endblock %}
+
 {% block hero %}
 <section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
   <div class="absolute inset-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div class="absolute inset-0
-                [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
-                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 opacity-70 dark:opacity-25"
+         style="background-image:
+           radial-gradient(circle at 15% 15%, rgba(16,185,129,.14), transparent 34%),
+           radial-gradient(circle at 85% 10%, rgba(20,184,166,.12), transparent 34%),
+           radial-gradient(circle at 75% 80%, rgba(14,165,233,.10), transparent 40%);">
+    </div>
   </div>
 
-  <div class="relative mx-auto max-w-7xl px-4 py-10">
-    <p class="text-xs font-semibold tracking-wide text-brand-600 uppercase">
-      Voices from the field
-    </p>
-    <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">Impact stories</h1>
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-300 uppercase">
+          Voices from the field
+        </p>
+        <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Impact stories
+        </h1>
 
-    {% if page.intro %}
-      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300 max-w-3xl">
-        {{ page.intro|richtext }}
-      </p>
-    {% else %}
-      <p class="mt-3 text-lg text-slate-600 dark:text-slate-300 max-w-3xl">
-        How capacity support, climate finance readiness, and project development are making a difference
-        for practitioners and institutions across Africa.
-      </p>
-    {% endif %}
+        {% if page.intro %}
+          <div class="hero-intro mt-2 text-slate-600 dark:text-slate-300 max-w-3xl">
+            {{ page.intro|richtext }}
+          </div>
+        {% else %}
+          <p class="mt-2 text-slate-600 dark:text-slate-300 max-w-3xl">
+            How capacity support, climate finance readiness, and project development are making a difference
+            for practitioners and institutions across Africa.
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="shrink-0 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Stories available</p>
+        <p class="text-xl font-bold text-slate-900 dark:text-white">{{ testimonials.count }}</p>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<div class="grid lg:grid-cols-[260px,1fr] gap-8">
+<section class="space-y-5">
 
-  <!-- Filters -->
-  <aside class="lg:sticky lg:top-24 space-y-4 h-fit">
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900">
-      <div class="flex items-center justify-between gap-2">
-        <h2 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
-          Filter by topic
-        </h2>
-        {% if testimonials.count %}
-          <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            {{ testimonials.count }} story{{ testimonials.count|pluralize }}
+  <!-- Top filter toolbar (same workflow/theme as repository & experts) -->
+  <form method="get"
+        id="storyFilterForm"
+        data-story-filter-form
+        class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 md:p-5">
+
+    <!-- Row 1: Search + Sort -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-3">
+      <!-- Search -->
+      <label class="relative block">
+        <span class="sr-only">Search stories</span>
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M10 2a8 8 0 105.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/>
+          </svg>
+        </span>
+        <input
+          type="search"
+          name="q"
+          value="{{ request.GET.q|default_if_none:'' }}"
+          data-story-search
+          placeholder="Search stories (title, person, organisation, topic...)"
+          autocomplete="off"
+          class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                 bg-white dark:bg-slate-950 px-12 py-3.5 text-sm md:text-base
+                 outline-none focus:ring-2 focus:ring-emerald-500">
+      </label>
+
+      <!-- Sort -->
+      <div class="relative">
+        <label class="sr-only" for="storySort">Sort</label>
+        <select id="storySort"
+                name="sort"
+                class="story-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                       bg-white dark:bg-slate-950 px-4 pr-10 py-3.5 text-sm md:text-base
+                       outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="recent" {% if not request.GET.sort or request.GET.sort == "recent" %}selected{% endif %}>Most recent</option>
+          <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest</option>
+          <option value="title_asc" {% if request.GET.sort == "title_asc" %}selected{% endif %}>Title A–Z</option>
+          <option value="title_desc" {% if request.GET.sort == "title_desc" %}selected{% endif %}>Title Z–A</option>
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Row 2: Topic filter -->
+    <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+      <div class="relative xl:col-span-2">
+        <label class="sr-only" for="storyTopic">Topic</label>
+        <select id="storyTopic"
+                name="topic"
+                class="story-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700
+                       bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm
+                       outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All topics</option>
+          {% for topic in topics %}
+            <option value="{{ topic.name }}" {% if request.GET.topic == topic.name %}selected{% endif %}>
+              {{ topic.name }}
+            </option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Active chips + clear -->
+    {% if request.GET.q or request.GET.topic %}
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="text-xs text-slate-500 dark:text-slate-400 mr-1">Active filters:</span>
+
+        {% if request.GET.q %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs">
+            Search: {{ request.GET.q }}
           </span>
         {% endif %}
-      </div>
 
-      <div class="mt-3 flex flex-wrap gap-2">
-        <!-- All -->
-        <a href="{{ page.url }}"
-           class="px-3 py-1.5 rounded-full text-xs sm:text-sm border
-                  {% if not request.GET.topic %}
-                    border-brand-600 text-brand-700 bg-brand-50
-                    dark:bg-slate-800 dark:text-brand-300
-                  {% else %}
-                    border-slate-200 dark:border-slate-700
-                    text-slate-600 dark:text-slate-300
-                    hover:bg-slate-50 dark:hover:bg-slate-800
-                  {% endif %}">
-          All
-        </a>
-
-        <!-- Topics -->
-        {% for t in topics %}
-          <a href="{{ page.url }}?topic={{ t.name|urlencode }}"
-             class="px-3 py-1.5 rounded-full text-xs sm:text-sm border
-                    {% if request.GET.topic == t.name %}
-                      border-brand-600 text-brand-700 bg-brand-50
-                      dark:bg-slate-800 dark:text-brand-300
-                    {% else %}
-                      border-slate-200 dark:border-slate-700
-                      text-slate-600 dark:text-slate-300
-                      hover:bg-slate-50 dark:hover:bg-slate-800
-                    {% endif %}">
-            {{ t.name }}
-          </a>
-        {% endfor %}
-      </div>
-
-      {% if request.GET.topic %}
-        <div class="mt-3 text-[11px] text-slate-500 dark:text-slate-400">
-          Showing stories tagged with <span class="font-medium">“{{ request.GET.topic }}”</span>.
-          <a href="{{ page.url }}" class="ml-1 underline hover:text-brand-600">
-            Clear filter
-          </a>
-        </div>
-      {% endif %}
-    </div>
-  </aside>
-
-  <!-- Cards -->
-  <section>
-    <div class="flex items-baseline justify-between gap-4 mb-4">
-      <h2 class="text-lg font-semibold">Stories</h2>
-      <div class="text-sm text-slate-500">
-        {% if testimonials.count %}
-          {{ testimonials.count }} story{{ testimonials.count|pluralize }}
-        {% else %}
-          0 stories
+        {% if request.GET.topic %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs">
+            Topic: {{ request.GET.topic }}
+          </span>
         {% endif %}
-      </div>
-    </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% if testimonials %}
-        {% for t in testimonials %}
-          {% include "portal/includes/testimonial_card.html" with t=t %}
-        {% endfor %}
-      {% else %}
-        <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center">
-          <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">💬</div>
-          <p class="font-medium">No testimonials yet</p>
-          <p class="text-sm mt-1">Once stories are added, they’ll appear here by topic.</p>
-        </div>
-      {% endif %}
+        <a href="{{ page.url }}"
+           class="ml-auto text-xs text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 underline underline-offset-2">
+          Clear all
+        </a>
+      </div>
+    {% endif %}
+  </form>
+
+  <!-- Results header -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">Stories</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        {% if testimonials.count %}
+          Showing {{ testimonials.count }} stor{{ testimonials.count|pluralize:"y,ies" }}.
+        {% else %}
+          No stories match your current search or filters.
+        {% endif %}
+      </p>
     </div>
-  </section>
-</div>
+  </div>
+
+  <!-- Cards (full-width grid, no left sidebar) -->
+  <div class="story-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+    {% if testimonials %}
+      {% for t in testimonials %}
+        <div class="story-card-shell">
+          {% include "portal/includes/testimonial_card.html" with t=t %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900">
+        <div class="mx-auto mb-3 w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">💬</div>
+        <p class="font-medium">No stories found</p>
+        <p class="text-sm mt-1">Try changing the search or topic filter above.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("[data-story-filter-form]");
+  if (!form) return;
+
+  // Auto-submit on dropdown change
+  form.querySelectorAll("select").forEach((el) => {
+    el.addEventListener("change", () => {
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
+  });
+
+  // Debounced search submit
+  const searchInput = form.querySelector("[data-story-search]");
+  if (searchInput) {
+    let timer;
+
+    searchInput.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }, 350);
+    });
+
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        clearTimeout(timer);
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

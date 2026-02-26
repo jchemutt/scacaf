@@ -2,14 +2,15 @@
 <!doctype html>
 <html lang="en"
       x-data="baseLayout()"
+      x-init="init()"
       x-bind:data-theme="theme"
       class="h-full"
-      :class="{'dark': theme === 'dark'}">
+      :class="{ 'dark': theme === 'dark', 'overflow-hidden': mobileOpen }"
+      x-on:keydown.window="kbd($event)">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
     <title>
         {% block title %}
@@ -23,436 +24,517 @@
 
     <meta name="description" content="
       {% if page %}
-        {{ page.search_description|default:'Explore resources, experts, webinars and impact stories.' }}
+        {{ page.search_description|default:'Explore resources, experts, webinars, trainings and impact stories.' }}
       {% else %}
         Access the SCACAF E-Hub knowledge portal.
       {% endif %}
     " />
-
     <meta name="csrf-token" content="{{ csrf_token }}"/>
+    <meta name="theme-color" content="#ffffff">
 
     <link rel="icon" href="{% static 'favicon.ico' %}" sizes="any">
-    <meta name="theme-color" content="#ffffff">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap" rel="stylesheet">
 
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
     <!-- Base CSS -->
     <style>
         html { font-family: Inter, ui-sans-serif, system-ui; }
-        .nav-link { position: relative; }
+        [x-cloak] { display: none !important; }
+
+        :focus-visible { outline: 2px solid #10b981; outline-offset: 2px; }
+
+        .nav-link {
+            position: relative;
+            transition: color .2s ease;
+            white-space: nowrap;
+        }
         .nav-link::after {
             content: "";
             position: absolute;
             left: 0;
-            bottom: -6px;
+            bottom: -8px;
             height: 2px;
             width: 0;
-            background: linear-gradient(90deg,#6366f1,#14b8a6);
+            background: linear-gradient(90deg, #10b981, #14b8a6);
             transition: width .25s ease;
         }
         .nav-link:hover::after,
         .nav-link[aria-current="page"]::after { width: 100%; }
 
-        .card { transition: transform .15s ease, box-shadow .2s ease; }
+        .nav-link[aria-current="page"] {
+            color: #047857;
+            font-weight: 600;
+        }
+        .dark .nav-link[aria-current="page"] {
+            color: #6ee7b7;
+        }
+
+        .card {
+            transition: transform .15s ease, box-shadow .2s ease;
+        }
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0,0,0,.08);
         }
-        :focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
+
+        /* ===== Swiper equal-height slides (resources + webinars + trainings) ===== */
+        .home-resource-swiper .swiper-wrapper,
+        .home-webinar-swiper .swiper-wrapper,
+        .home-training-swiper .swiper-wrapper {
+            align-items: stretch;
+        }
+
+        .home-resource-swiper .swiper-slide,
+        .home-webinar-swiper .swiper-slide,
+        .home-training-swiper .swiper-slide {
+            height: auto;
+            display: flex;
+        }
+
+        .home-resource-swiper .swiper-slide > *,
+        .home-webinar-swiper .swiper-slide > *,
+        .home-training-swiper .swiper-slide > * {
+            width: 100%;
+            display: flex;
+        }
+
+        /* Optional fallback clamp helpers */
+        .clamp-1, .clamp-2, .clamp-3 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .clamp-1 { -webkit-line-clamp: 1; line-clamp: 1; }
+        .clamp-2 { -webkit-line-clamp: 2; line-clamp: 2; }
+        .clamp-3 { -webkit-line-clamp: 3; line-clamp: 3; }
+
+        /* Swiper controls polish */
+        .swiper-button-disabled {
+            opacity: .35;
+            pointer-events: none;
+        }
+
+        .swiper-pagination-bullet {
+            width: 8px;
+            height: 8px;
+            opacity: .6;
+        }
+        .swiper-pagination-bullet-active {
+            opacity: 1;
+        }
+
+        .home-resource-swiper .swiper-slide > *,
+        .home-webinar-swiper .swiper-slide > *,
+        .home-training-swiper .swiper-slide > * {
+            transition: transform .25s ease, opacity .25s ease;
+        }
+        .home-resource-swiper .swiper-slide:hover > *,
+        .home-webinar-swiper .swiper-slide:hover > *,
+        .home-training-swiper .swiper-slide:hover > * {
+            transform: translateY(-2px);
+        }
+
+        /* Footer links */
+        .footer-link {
+            color: rgb(71 85 105); /* slate-600 */
+            transition: color .2s ease;
+        }
+        .footer-link:hover { color: rgb(5 150 105); } /* emerald-600 */
+        .dark .footer-link { color: rgb(148 163 184); } /* slate-400 */
+        .dark .footer-link:hover { color: rgb(110 231 183); } /* emerald-300 */
     </style>
 
     <!-- Tailwind -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- HTMX -->
     <script defer src="https://unpkg.com/htmx.org@1.9.12"></script>
 
+    <!-- Swiper JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <!-- Theme + Keyboard Shortcuts -->
     <script>
         function baseLayout() {
             return {
                 theme: localStorage.getItem('theme')
-                     || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
                 mobileOpen: false,
-                searchOpen: false,
+                showTop: false,
+
+                init() {
+                    this.syncThemeColor();
+                    window.addEventListener('scroll', () => {
+                        this.showTop = window.scrollY > 250;
+                    });
+                },
+
+                syncThemeColor() {
+                    const meta = document.querySelector('meta[name="theme-color"]');
+                    if (!meta) return;
+                    meta.setAttribute('content', this.theme === 'dark' ? '#020617' : '#ffffff');
+                },
 
                 toggleTheme() {
                     this.theme = this.theme === 'dark' ? 'light' : 'dark';
                     localStorage.setItem('theme', this.theme);
+                    this.syncThemeColor();
                 },
 
-                // Global keyboard shortcuts
-                kbd(e) {
-                    if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+                openSearch() {
+                    this.mobileOpen = false;
+                    const s = document.querySelector('[data-global-search]');
+                    if (s) {
+                        s.focus();
+                        s.select?.();
+                    }
+                },
 
-                    // Global search
+                kbd(e) {
+                    if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+
                     if (e.key === '/') {
                         e.preventDefault();
-                        const s = document.querySelector('[data-global-search]');
-                        if (s) s.focus();
+                        this.openSearch();
                     }
 
-                    // Toggle theme
                     if (e.key.toLowerCase() === 't') {
                         this.toggleTheme();
+                    }
+
+                    if (e.key === 'Escape') {
+                        this.mobileOpen = false;
                     }
                 }
             }
         }
-
-        document.addEventListener('keydown', e => {
-            const root = document.querySelector('[x-data]');
-            if (root && root.__x) {
-                root.__x.$data.kbd(e);
-            }
-        });
     </script>
 
     {% block extra_head %}{% endblock %}
-    {% wagtailuserbar %}
 </head>
-<!-- Floating Back to top (appears after scroll) -->
+
+<body id="top" class="h-full bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased">
+{% wagtailuserbar %}
+
+<a href="#main"
+   class="sr-only focus:not-sr-only focus:absolute focus:z-[70] top-2 left-2 bg-emerald-600 text-white px-3 py-2 rounded-md">
+    Skip to content
+</a>
+
+<!-- Back to top -->
 <a href="#top"
-   x-data="{ show:false }"
-   x-init="window.addEventListener('scroll', () => show = window.scrollY > 250)"
-   x-show="show"
+   x-cloak
+   x-show="showTop"
    x-transition.opacity
    aria-label="Back to top"
-   class="fixed bottom-5 right-5 z-50
-          inline-flex items-center justify-center
-          w-12 h-12 rounded-full
-          bg-white/90 dark:bg-slate-900/90 backdrop-blur
-          border border-slate-200 dark:border-slate-800
-          shadow-lg
-          text-slate-700 dark:text-slate-200
-          hover:bg-white dark:hover:bg-slate-900
-          hover:text-brand-600
-          transition
-          focus:outline-none focus:ring-2 focus:ring-brand-500">
+   class="fixed bottom-5 right-5 z-50 inline-flex items-center justify-center w-12 h-12 rounded-full
+          bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-800
+          shadow-lg text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition
+          focus:outline-none focus:ring-2 focus:ring-emerald-500">
   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M12 5l7 7M12 5l-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   </svg>
 </a>
 
+<!-- ====================== HEADER ====================== -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/85 dark:bg-slate-950/85 backdrop-blur border-b border-slate-200/70 dark:border-slate-800/70">
+  <div class="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between gap-3">
 
+    <!-- Left -->
+    <div class="flex items-center gap-3 min-w-0">
+      <button @click="mobileOpen = true"
+              class="md:hidden w-10 h-10 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900"
+              aria-label="Open menu">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
 
-<body id="top" class="h-full bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased">
-
-<a href="#main"
-   class="sr-only focus:not-sr-only focus:absolute focus:z-50 top-2 left-2
-          bg-brand-600 text-white px-3 py-2 rounded-md">
-    Skip to content
-</a>
-
-
-<!-- ======================  HEADER (FIXED)  ====================== -->
-<header class="fixed top-0 left-0 right-0 z-50
-        bg-white/80 dark:bg-slate-950/80 backdrop-blur
-        border-b border-slate-200/70 dark:border-slate-800/70">
-
-  <div class="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between gap-4">
-
-    <!-- LEFT: Brand + Desktop Nav -->
-    <div class="flex items-center gap-8 flex-1 min-w-0">
-
-      <!-- Mobile Toggle + Brand -->
-      <div class="flex items-center gap-3">
-        <button @click="mobileOpen = !mobileOpen"
-                class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg
-                       border border-slate-200 dark:border-slate-800
-                       hover:bg-slate-100 dark:hover:bg-slate-900"
-                aria-label="Toggle menu">
-          <svg class="w-5 h-5" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M4 7h16M4 12h16M4 17h16"/>
-          </svg>
-        </button>
-
-        <a href="/" class="font-semibold tracking-tight text-lg whitespace-nowrap">
-          SCACAF e-Hub
-        </a>
-      </div>
-
-      <!-- Desktop Nav (centered look like your screenshot) -->
-      <nav class="hidden md:flex items-center justify-center flex-1 gap-8 text-[15px]
-                  text-slate-600 dark:text-slate-200">
-        <a href="/" class="nav-link hover:text-emerald-700">Home</a>
-
-        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-           class="nav-link hover:text-emerald-700">
-          Resources
-        </a>
-
-        <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-           class="nav-link hover:text-emerald-700">
-          Community
-        </a>
-
-        <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-           class="nav-link hover:text-emerald-700">
-          Webinars
-        </a>
-
-        <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-           class="nav-link hover:text-emerald-700">
-          Impact stories
-        </a>
-
-        <a href="/trainings/" class="nav-link hover:text-emerald-700">
-          Our trainings
-        </a>
-      </nav>
-
+      <a href="/" class="flex items-center gap-2 min-w-0">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-sm shrink-0">
+          S
+        </span>
+        <span class="min-w-0">
+          <span class="block font-semibold tracking-tight leading-tight truncate">SCACAF e-Hub</span>
+          <span class="hidden lg:block text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Knowledge Portal</span>
+        </span>
+      </a>
     </div>
 
-    <!-- RIGHT: Theme + Auth (retained) -->
-    <div class="flex items-center gap-2">
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex items-center gap-5 lg:gap-6 text-[14px] lg:text-[15px] text-slate-600 dark:text-slate-200">
+      <a href="/"
+         class="nav-link hover:text-emerald-700"
+         {% if request.path == "/" %}aria-current="page"{% endif %}>
+        Home
+      </a>
+
+      <a href="{% if about_index %}{{ about_index.url }}{% else %}/about/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/about" in request.path %}aria-current="page"{% endif %}>
+        About
+      </a>
+
+      <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/repository" in request.path %}aria-current="page"{% endif %}>
+        Resources
+      </a>
+
+      <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/experts" in request.path %}aria-current="page"{% endif %}>
+        Experts
+      </a>
+
+      <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/webinars" in request.path %}aria-current="page"{% endif %}>
+        Webinars
+      </a>
+
+      <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/testimonials" in request.path %}aria-current="page"{% endif %}>
+        Impact Stories
+      </a>
+
+      <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+         class="nav-link hover:text-emerald-700"
+         {% if "/trainings" in request.path %}aria-current="page"{% endif %}>
+        Trainings
+      </a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2 shrink-0">
+      <!-- Search shortcut -->
+      <button type="button"
+              @click="openSearch()"
+              class="hidden lg:inline-flex items-center gap-2 px-3 h-10 rounded-xl border border-slate-200 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
+              aria-label="Focus search">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 2a8 8 0 105.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/>
+        </svg>
+        <span>Search</span>
+        <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">/</span>
+      </button>
 
       <!-- Theme Toggle -->
       <button @click="toggleTheme"
-              class="w-10 h-10 flex items-center justify-center rounded-lg
-                     border border-slate-200 dark:border-slate-800
-                     hover:bg-slate-100 dark:hover:bg-slate-900"
+              class="w-10 h-10 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900"
               aria-label="Toggle theme">
-        <svg x-show="theme==='light'" class="w-5 h-5" viewBox="0 0 24 24">
-          <path fill="currentColor"
-                d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.79 1.8-1.79zM1 13h3v-2H1v2zm10 10h2v-3h-2v3zM1 5h3V3H1v2zm16.24-.16l1.79-1.79L21.66 3.9l-1.79 1.79-1.63-1.84zM20 13h3v-2h-3v2zM12 1h2v3h-2V1zm6.24 16.24l1.63 1.84 1.79-1.79-1.79-1.79-1.63 1.74zM6.24 18.76l-1.8 1.79L3.17 18.7l1.79-1.79 1.28 1.85zM12 7a5 5 0 100 10 5 5 0 000-10z"/>
+        <svg x-show="theme==='light'" x-cloak class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.79 1.8-1.79zM1 13h3v-2H1v2zm10 10h2v-3h-2v3zM1 5h3V3H1v2zm16.24-.16l1.79-1.79L21.66 3.9l-1.79 1.79-1.63-1.84zM20 13h3v-2h-3v2zM12 1h2v3h-2V1zm6.24 16.24l1.63 1.84 1.79-1.79-1.79-1.79-1.63 1.74zM6.24 18.76l-1.8 1.79L3.17 18.7l1.79-1.79 1.28 1.85zM12 7a5 5 0 100 10 5 5 0 000-10z"/>
         </svg>
-        <svg x-show="theme==='dark'" class="w-5 h-5" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 2a10 10 0 00-7.07 17.07A10 10 0 1012 2z"/>
+        <svg x-show="theme==='dark'" x-cloak class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a10 10 0 00-7.07 17.07A10 10 0 1012 2z"/>
         </svg>
       </button>
 
       {% if request.user.is_authenticated %}
-        <span class="hidden sm:inline text-sm mr-1 text-slate-600 dark:text-slate-300">
+        <span class="hidden xl:inline text-sm text-slate-600 dark:text-slate-300 max-w-[120px] truncate">
           {{ request.user.first_name|default:request.user.username }}
         </span>
 
-        <form action="{% url 'logout' %}" method="post">
-          {% csrf_token %}
-          <button class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800
-                         hover:bg-slate-100 dark:hover:bg-slate-900 text-sm flex gap-2 items-center">
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                    d="M16 13v-2H7.83l3.59-3.59L10 5l-6 6 6 6 1.41-1.41L7.83 13H16z"/>
-              <path fill="currentColor"
-                    d="M20 3h-8v2h8v14h-8v2h8a2 2 0 002-2V5a2 2 0 00-2-2z"/>
-            </svg>
-            Logout
-          </button>
-        </form>
-
         {% if request.user.is_superuser %}
           <a href="/admin/"
-             class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800
-                    hover:bg-slate-100 dark:hover:bg-slate-900 text-sm flex gap-2 items-center">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.7 0 5.33.79 7.5 2.25V20H4.5v-5.75C6.67 12.79 9.3 12 12 12zm0-2a4 4 0 110-8 4 4 0 010 8z"/>
-            </svg>
+             class="hidden sm:inline-flex px-3 h-10 items-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
             Admin
           </a>
         {% endif %}
+
+        <form action="{% url 'logout' %}" method="post" class="hidden sm:block">
+          {% csrf_token %}
+          <button class="px-3 h-10 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
+            Logout
+          </button>
+        </form>
       {% else %}
         <a href="{% url 'login' %}"
-           class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800
-                  hover:bg-slate-100 dark:hover:bg-slate-900 text-sm flex items-center gap-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21 3H11v2h10v14H11v2h10a2 2 0 002-2V5a2 2 0 00-2-2z"/>
-            <path d="M13 12l-5-5v3H2v4h6v3l5-5z"/>
-          </svg>
+           class="px-3 h-10 inline-flex items-center rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-medium">
           Login
         </a>
       {% endif %}
-
     </div>
   </div>
+</header>
 
-  <!-- MOBILE NAV (no search) -->
-  <nav x-show="mobileOpen"
-       x-transition
-       class="md:hidden border-t border-slate-200 dark:border-slate-800
-              bg-white dark:bg-slate-950 px-4 py-3 grid gap-2">
+<!-- Mobile drawer backdrop -->
+<div x-cloak
+     x-show="mobileOpen"
+     x-transition.opacity
+     @click="mobileOpen = false"
+     class="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[1px] md:hidden"></div>
 
-    <a href="/" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Home</a>
+<!-- Mobile drawer -->
+<aside x-cloak
+       x-show="mobileOpen"
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 -translate-y-2"
+       x-transition:enter-end="opacity-1 translate-y-0"
+       x-transition:leave="transition ease-in duration-150"
+       x-transition:leave-start="opacity-1 translate-y-0"
+       x-transition:leave-end="opacity-0 -translate-y-2"
+       class="fixed top-16 inset-x-3 z-50 md:hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-2xl overflow-hidden">
 
-    <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Resources</a>
+  <div class="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-semibold">Navigation</p>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Browse the portal</p>
+    </div>
+    <button @click="mobileOpen = false"
+            class="w-9 h-9 inline-flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900"
+            aria-label="Close menu">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.41L10.59 13.4 4.29 19.7 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3z"/></svg>
+    </button>
+  </div>
 
-    <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Community</a>
+  <div class="p-3 grid gap-1">
+    <a href="/" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Home</a>
+    <a href="{% if about_index %}{{ about_index.url }}{% else %}/about/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">About</a>
+    <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Resources</a>
+    <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Experts</a>
+    <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Webinars</a>
+    <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Impact stories</a>
+    <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}" class="block px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900">Trainings</a>
 
-    <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Webinars</a>
+    <button type="button"
+            @click="openSearch()"
+            class="mt-1 w-full text-left px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-sm">
+      Search the portal <span class="text-slate-500">(/)</span>
+    </button>
+  </div>
 
-    <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Impact stories</a>
-
-    <a href="/trainings/"
-       class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">Our trainings</a>
-
+  <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40">
     {% if request.user.is_authenticated %}
-      <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">
-          Logout
-        </button>
-      </form>
+      <div class="text-sm mb-2 text-slate-600 dark:text-slate-300 truncate">
+        Signed in as <span class="font-medium">{{ request.user.first_name|default:request.user.username }}</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        {% if request.user.is_superuser %}
+          <a href="/admin/" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-sm hover:bg-white dark:hover:bg-slate-950">Admin</a>
+        {% endif %}
+        <form action="{% url 'logout' %}" method="post" class="{% if not request.user.is_superuser %}col-span-2{% endif %}">
+          {% csrf_token %}
+          <button class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-sm hover:bg-white dark:hover:bg-slate-950">
+            Logout
+          </button>
+        </form>
+      </div>
     {% else %}
       <a href="{% url 'login' %}"
-         class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900">
+         class="w-full inline-flex items-center justify-center px-3 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500">
         Login
       </a>
     {% endif %}
-  </nav>
+  </div>
+</aside>
 
-</header>
-
-
-
-
-<!-- ========= PUSH PAGE CONTENT BELOW FIXED HEADER ========= -->
-<div class="pt-8">
+<!-- ========= PAGE WRAPPER ========= -->
+<div class="pt-16">
     {% block subnav %}{% endblock %}
-
     {% block hero %}{% endblock %}
 
-    <main id="main"
-          class="mx-auto max-w-7xl px-4 py-10">
+    <main id="main" class="mx-auto max-w-7xl px-4 py-10">
         {% block content %}{% endblock %}
     </main>
 </div>
 
-
+{% if settings.portal.PortalSiteSettings.footer_partner_row %}
+  <div class="mx-auto max-w-7xl px-4 pb-2">
+    {% include "portal/includes/partners_row.html" with partner_row=settings.portal.PortalSiteSettings.footer_partner_row class_name="mt-0 mb-8" %}
+  </div>
+{% endif %}
 
 <!-- ======================== FOOTER ========================= -->
 <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-  <div class="mx-auto max-w-7xl px-4 py-14">
+  <div class="mx-auto max-w-7xl px-4 py-12">
 
-    <!-- Top grid -->
     <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 items-start">
+      <!-- Brand / Summary -->
+      <div class="lg:col-span-4 space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-sm">S</span>
+          <div class="font-semibold tracking-tight text-lg">SCACAF e-Hub</div>
+        </div>
 
-      <!-- Brand -->
-      <div class="space-y-4 lg:col-span-4">
-        <div class="font-semibold tracking-tight text-lg">SCACAF e-Hub</div>
-
-        <p class="text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">
-          Climate Adaptation Finance — Turning NDCs &amp; NAPs into bankable adaptation investments.
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed max-w-md text-sm">
+          Climate Adaptation Finance knowledge portal for practical learning, collaboration, and investment-ready project development.
         </p>
+
+        <div class="text-xs text-slate-500 dark:text-slate-500">
+                  Press <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">T</kbd> to toggle theme
+        </div>
       </div>
 
-      <!-- Quick Links -->
-      <div class="space-y-4 lg:col-span-2">
-        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Quick Links</div>
-        <ul class="space-y-3 text-slate-600 dark:text-slate-400 text-sm">
-          <li>
-            <a class="hover:text-brand-600 transition-colors"
-               href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}">
-              Resources
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-brand-600 transition-colors"
-               href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}">
-              Community
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-brand-600 transition-colors"
-               href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}">
-              Webinars
-            </a>
-          </li>
+      <!-- Learn -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Learn</div>
+        <ul class="space-y-3 text-sm">
+          <li><a class="footer-link" href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}">Resources</a></li>
+          <li><a class="footer-link" href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}">Webinars</a></li>
+          <li><a class="footer-link" href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}">Trainings</a></li>
         </ul>
       </div>
 
-      <!-- Explore -->
-      <div class="space-y-4 lg:col-span-2">
-        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Explore</div>
-        <ul class="space-y-3 text-slate-600 dark:text-slate-400 text-sm">
-          <li>
-            <a class="hover:text-brand-600 transition-colors"
-               href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}">
-              Impact stories
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-brand-600 transition-colors" href="/trainings/">
-              Our trainings
-            </a>
-          </li>
-          <li>
-            <a class="hover:text-brand-600 transition-colors" href="/newsletter/">
-              Newsletter
-            </a>
-          </li>
+      <!-- Connect -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Connect</div>
+        <ul class="space-y-3 text-sm">
+          <li><a class="footer-link" href="{% if about_index %}{{ about_index.url }}{% else %}/about/{% endif %}">About the hub</a></li>
+          <li><a class="footer-link" href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}">Expert Directory</a></li>
+          <li><a class="footer-link" href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}">Impact stories</a></li>
+          <li><a class="footer-link" href="{% if contact_index %}{{ contact_index.url }}{% else %}/contact-us/{% endif %}">Contact</a></li>
         </ul>
       </div>
 
-      <!-- Newsletter -->
-      <div class="space-y-4 lg:col-span-4">
-        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Newsletter</div>
+      <!-- Newsletter / CTA -->
+      <div class="lg:col-span-4 space-y-4">
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Stay updated</div>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
-          Stay updated on climate finance opportunities and new resources.
+          Get updates on new learning resources, webinars, trainings, and adaptation finance opportunities.
         </p>
 
+        {# Replace action with your actual subscription route if different #}
         <form action="#" method="post" class="flex flex-col sm:flex-row gap-3">
           {% csrf_token %}
           <label class="w-full">
             <span class="sr-only">Email</span>
             <input type="email" name="email" placeholder="Your email" required
-              class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700
-                     bg-white dark:bg-slate-900 px-4 py-3 text-sm
-                     focus:ring-2 focus:ring-brand-500 outline-none" />
+                   class="w-full rounded-xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
           </label>
 
           <button type="submit"
-            class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-700 text-white text-sm font-medium
-                   hover:bg-emerald-600 transition-colors">
+                  class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
             Subscribe
           </button>
         </form>
 
-        <p class="text-xs text-slate-500 dark:text-slate-500">
-          No spam. Unsubscribe anytime.
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Partners -->
-    <div class="mt-12 pt-10 border-t border-slate-200 dark:border-slate-800">
-      <div class="text-center text-slate-600 dark:text-slate-400">Partners</div>
-
-      <div class="mt-6 flex flex-wrap justify-center gap-4">
-        <a href="#"
-           class="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800
-                  text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
-          Alliance Bioversity &amp; CIAT
-        </a>
-        <a href="#"
-           class="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800
-                  text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
-          AGNES Africa
-        </a>
       </div>
     </div>
 
     <!-- Bottom bar -->
-    <div class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
-      <p class="text-center text-sm text-slate-600 dark:text-slate-400">
-        © {{ now|date:"Y" }} SCACAF e-Hub. All rights reserved.
+    <div class="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
+        © {% now "Y" %} SCACAF e-Hub. All rights reserved.
       </p>
-    </div>
 
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        
+      </div>
+    </div>
   </div>
 </footer>
-
-
-
 
 <!-- Toast Notifications -->
 <div aria-live="polite"
@@ -460,8 +542,7 @@
      x-data="{toasts:[]}"
      x-on:notify.window="toasts.push($event.detail); setTimeout(()=>toasts.shift(),4000)">
     <template x-for="t in toasts" :key="t.id">
-        <div class="px-4 py-3 rounded-xl shadow-soft border border-slate-200
-                    bg-white/90 dark:bg-slate-900/90">
+        <div class="px-4 py-3 rounded-xl shadow-soft border border-slate-200 bg-white/90 dark:bg-slate-900/90">
             <p class="text-sm" x-text="t.message"></p>
         </div>
     </template>
@@ -469,7 +550,90 @@
 
 <div id="modal-root"></div>
 
-{% block extra_js %}{% endblock %}
+<!-- Swiper init (home page carousels) -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.Swiper) return;
 
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const resourceEl = document.querySelector(".home-resource-swiper");
+  if (resourceEl) {
+    new Swiper(resourceEl, {
+      slidesPerView: 1.15,
+      spaceBetween: 16,
+      watchOverflow: true,
+      loop: true,
+      speed: 700,
+      grabCursor: true,
+      observer: true,
+      observeParents: true,
+      autoplay: prefersReducedMotion ? false : {
+        delay: 3500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      },
+      pagination: { el: ".home-resource-pagination", clickable: true },
+      navigation: { nextEl: ".home-resource-next", prevEl: ".home-resource-prev" },
+      breakpoints: {
+        640: { slidesPerView: 2, spaceBetween: 18 },
+        1024: { slidesPerView: 3, spaceBetween: 20 }
+      }
+    });
+  }
+
+  const webinarEl = document.querySelector(".home-webinar-swiper");
+  if (webinarEl) {
+    new Swiper(webinarEl, {
+      slidesPerView: 1.1,
+      spaceBetween: 16,
+      watchOverflow: true,
+      loop: true,
+      speed: 700,
+      grabCursor: true,
+      observer: true,
+      observeParents: true,
+      autoplay: prefersReducedMotion ? false : {
+        delay: 4200,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      },
+      pagination: { el: ".home-webinar-pagination", clickable: true },
+      navigation: { nextEl: ".home-webinar-next", prevEl: ".home-webinar-prev" },
+      breakpoints: {
+        640: { slidesPerView: 1.5, spaceBetween: 18 },
+        1024: { slidesPerView: 2, spaceBetween: 20 }
+      }
+    });
+  }
+
+  const trainingEl = document.querySelector(".home-training-swiper");
+  if (trainingEl) {
+    new Swiper(trainingEl, {
+      slidesPerView: 1.1,
+      spaceBetween: 16,
+      watchOverflow: true,
+      loop: true,
+      speed: 700,
+      grabCursor: true,
+      observer: true,
+      observeParents: true,
+      autoplay: prefersReducedMotion ? false : {
+        delay: 3800,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      },
+      pagination: { el: ".home-training-pagination", clickable: true },
+      navigation: { nextEl: ".home-training-next", prevEl: ".home-training-prev" },
+      breakpoints: {
+        640: { slidesPerView: 1.5, spaceBetween: 18 },
+        1024: { slidesPerView: 2.2, spaceBetween: 20 }
+      }
+    });
+  }
+});
+</script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

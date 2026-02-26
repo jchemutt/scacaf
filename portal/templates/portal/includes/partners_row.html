@@ -1,0 +1,66 @@
+{% load wagtailimages_tags %}
+
+{% if partner_row and partner_row.is_active %}
+  {% with items=partner_row.visible_items %}
+    {% if items %}
+      <section class="{% if class_name %}{{ class_name }}{% else %}mt-12{% endif %}">
+        <div class="
+          max-w-6xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800
+          {% if partner_row.style_variant == 'soft' %}
+            bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-950
+          {% else %}
+            bg-white dark:bg-slate-900
+          {% endif %}
+          p-5 md:p-6
+        ">
+          <!-- Header (centered) -->
+          <div class="text-center mb-4">
+            <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              {{ partner_row.title }}
+            </h2>
+            {% if partner_row.subtitle %}
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {{ partner_row.subtitle }}
+              </p>
+            {% endif %}
+          </div>
+
+          <!-- Logos row (centered, wraps nicely) -->
+          <div class="flex flex-wrap justify-center gap-3 md:gap-4">
+            {% for item in items %}
+              {% with p=item.partner %}
+                {% if p.logo %}
+                  {% with label=item.custom_label|default:p.name %}
+                    {% with href=item.link_override|default:p.website_url %}
+                      {% if href %}
+                        <a href="{{ href }}"
+                           target="_blank" rel="noopener"
+                           title="{{ label }}"
+                           class="group w-[140px] sm:w-[160px] md:w-[170px]
+                                  rounded-xl border border-slate-200 dark:border-slate-800
+                                  bg-white dark:bg-slate-950 px-3 md:px-4 py-3
+                                  min-h-[72px] flex items-center justify-center
+                                  hover:border-emerald-300 dark:hover:border-emerald-700
+                                  hover:shadow-sm transition">
+                          {% image p.logo max-220x80 class="max-h-10 md:max-h-12 w-auto object-contain opacity-90 group-hover:opacity-100 transition" %}
+                        </a>
+                      {% else %}
+                        <div title="{{ label }}"
+                             class="w-[140px] sm:w-[160px] md:w-[170px]
+                                    rounded-xl border border-slate-200 dark:border-slate-800
+                                    bg-white dark:bg-slate-950 px-3 md:px-4 py-3
+                                    min-h-[72px] flex items-center justify-center">
+                          {% image p.logo max-220x80 class="max-h-10 md:max-h-12 w-auto object-contain opacity-90" %}
+                        </div>
+                      {% endif %}
+                    {% endwith %}
+                  {% endwith %}
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  {% endwith %}
+{% endif %}

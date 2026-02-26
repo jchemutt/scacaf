@@ -6,48 +6,117 @@
 {% block hero %}
 <section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
   <div class="absolute inset-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 50%_20%,black,transparent)] bg-[radial-gradient(1200px_600px_at_10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 50%_20%,black,transparent)] bg-[radial-gradient(1200px_650px_at_10%_-20%,rgba(16,185,129,.10),transparent)]"></div>
   </div>
 
-  <div class="relative mx-auto max-w-7xl px-4 py-10">
-    <div class="flex items-start gap-6">
-      <div class="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
-        {% if page.photo %}
-          {% image page.photo fill-192x192 class="w-full h-full object-cover" %}
-        {% else %}
-          <div class="w-full h-full grid place-items-center text-slate-400">
-            <svg class="w-10 h-10 opacity-60" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/></svg>
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-600 transition">Home</a>
+      <span>›</span>
+      <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}" class="hover:text-emerald-600 transition">Experts</a>
+      <span>›</span>
+      <span class="text-slate-700 dark:text-slate-200">{{ page.title }}</span>
+    </nav>
+
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+      <!-- Main identity -->
+      <div class="lg:col-span-9">
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-5">
+          <!-- Photo -->
+          <div class="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shrink-0">
+            {% if page.photo %}
+              {% image page.photo fill-224x224 class="w-full h-full object-cover" %}
+            {% else %}
+              <div class="w-full h-full grid place-items-center text-slate-400">
+                <svg class="w-10 h-10 opacity-60" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5m0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5Z"/>
+                </svg>
+              </div>
+            {% endif %}
           </div>
-        {% endif %}
+
+          <!-- Name + headline -->
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                Expert profile
+              </span>
+              {% with ex=page.expertise.all %}
+                {% if ex %}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700">
+                    {{ ex|length }} area{{ ex|length|pluralize }} of expertise
+                  </span>
+                {% endif %}
+              {% endwith %}
+            </div>
+
+            <h1 class="mt-2 text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              {{ page.title }}
+            </h1>
+
+            {% if page.role or page.organization %}
+              <p class="mt-1 text-slate-600 dark:text-slate-300 text-sm md:text-base">
+                {{ page.role }}{% if page.role and page.organization %} · {% endif %}{{ page.organization }}
+              </p>
+            {% endif %}
+
+            <!-- Chips -->
+            <div class="mt-3 flex flex-wrap gap-2">
+              {% for tp in page.expertise.all|slice:":4" %}
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+                  {{ tp.name }}
+                </span>
+              {% endfor %}
+              {% if page.expertise.all|length > 4 %}
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                  +{{ page.expertise.all|length|add:"-4" }} more
+                </span>
+              {% endif %}
+
+              {% for rg in page.regions.all|slice:":2" %}
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs border border-emerald-100 dark:border-slate-700">
+                  {{ rg.name }}
+                </span>
+              {% endfor %}
+
+              {% for lg in page.languages.all|slice:":2" %}
+                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-200">
+                  {{ lg.name }}
+                </span>
+              {% endfor %}
+              {% if page.languages.all|length > 2 %}
+                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400">
+                  +{{ page.languages.all|length|add:"-2" }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="min-w-0">
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
-        {% if page.role or page.organization %}
-          <p class="mt-1 text-slate-600 dark:text-slate-300">
-            {{ page.role }}{% if page.role and page.organization %} · {% endif %}{{ page.organization }}
-          </p>
-        {% endif %}
+      <!-- Hero actions card -->
+      <div class="lg:col-span-3">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur p-3">
+          <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Quick actions
+          </div>
 
-        <!-- Chips -->
-        <div class="mt-3 flex flex-wrap gap-2">
-          {% for tp in page.expertise.all %}
-            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ tp.name }}</span>
-          {% endfor %}
-          {% for rg in page.regions.all %}
-            <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs">{{ rg.name }}</span>
-          {% endfor %}
-          
-         {% if page.languages.exists %}
-      {% for lg in page.languages.all|slice:":2" %}
-        <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px]">{{ lg.name }}</span>
-      {% endfor %}
-      
-      {% if page.languages.all|length > 2 %}
-        <span class="text-[11px] text-slate-500">+{{ page.languages.all|length|add:"-2" }}</span>
-      {% endif %}
-    {% endif %}
+          <div class="mt-3 grid grid-cols-1 gap-2">
+            <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+              ← Back to directory
+            </a>
+            <a href="#expert-resources"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition text-sm">
+              View resources
+            </a>
+            <a href="#expert-webinars"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+              View webinars
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -58,76 +127,207 @@
 {% block content %}
 <div class="grid lg:grid-cols-12 gap-8">
   <!-- Main -->
-  <article class="lg:col-span-8">
-    {% if page.bio %}
-      <div class="prose dark:prose-invert max-w-none">
-        {{ page.bio|richtext }}
+  <article class="lg:col-span-8 space-y-6">
+    <!-- Bio -->
+    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          About this expert
+        </h2>
       </div>
-    {% else %}
-      <p class="text-slate-600 dark:text-slate-400">No bio provided.</p>
-    {% endif %}
+
+      {% if page.bio %}
+        <div class="prose dark:prose-invert max-w-none prose-slate prose-headings:tracking-tight prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {{ page.bio|richtext }}
+        </div>
+      {% else %}
+        <p class="text-slate-600 dark:text-slate-400 text-sm">
+          No bio has been added yet.
+        </p>
+      {% endif %}
+    </section>
 
     <!-- Resources aligned with expertise -->
     {% with res=page.resources_by_expert %}
-      {% if res %}
-        <section class="mt-10">
-          <h2 class="text-xl font-semibold flex items-center gap-2">
-            <span>Resources aligned with expertise</span><span class="text-base">📚</span>
-          </h2>
+      <section id="expert-resources" class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <span>Resources aligned with expertise</span>
+              <span aria-hidden="true">📚</span>
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Curated materials related to this expert’s focus areas.
+            </p>
+          </div>
+
+          {% if res %}
+            <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {{ res|length }} resource{{ res|length|pluralize }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if res %}
           <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {% for r in res %}
               {% include "portal/includes/resource_card.html" with r=r %}
             {% endfor %}
           </div>
-        </section>
-      {% endif %}
+        {% else %}
+          <div class="mt-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-center">
+            <div class="text-2xl mb-1">📘</div>
+            <p class="font-medium text-slate-700 dark:text-slate-200">No linked resources yet</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Resources associated with this expert will appear here.
+            </p>
+          </div>
+        {% endif %}
+      </section>
     {% endwith %}
 
     <!-- Webinars -->
     {% with talks=page.webinars_by_expert %}
-      {% if talks %}
-        <section class="mt-10">
-          <h2 class="text-xl font-semibold flex items-center gap-2">
-            <span>Webinars & talks</span><span class="text-base">🎤</span>
-          </h2>
+      <section id="expert-webinars" class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <span>Webinars &amp; talks</span>
+              <span aria-hidden="true">🎤</span>
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Sessions related to this expert’s topics and contributions.
+            </p>
+          </div>
+
+          {% if talks %}
+            <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {{ talks|length }} session{{ talks|length|pluralize }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if talks %}
           <div class="mt-4 grid sm:grid-cols-2 gap-6">
             {% for w in talks %}
-              {% include "portal/includes/webinar_card.html" with w=w %}
+              {% include "portal/includes/webinar_card.html" with webinar=w %}
             {% endfor %}
           </div>
-        </section>
-      {% endif %}
+        {% else %}
+          <div class="mt-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-center">
+            <div class="text-2xl mb-1">🎥</div>
+            <p class="font-medium text-slate-700 dark:text-slate-200">No webinars listed yet</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Related webinars and talks will appear here when available.
+            </p>
+          </div>
+        {% endif %}
+      </section>
     {% endwith %}
   </article>
 
   <!-- Sidebar -->
   <aside class="lg:col-span-4">
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-      <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Contact & meta</h3>
-      <ul class="mt-3 space-y-2 text-sm">
-        {% if page.organization %}<li><span class="text-slate-500">Organization:</span> {{ page.organization }}</li>{% endif %}
-        {% if page.role %}<li><span class="text-slate-500">Role:</span> {{ page.role }}</li>{% endif %}
-       {% with langs=page.languages.all %}
-        {% if langs %}
-          <li>
-            <span class="text-slate-500">Languages:</span>
-            {% for l in langs %}{{ l.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-          </li>
+    <div class="lg:sticky lg:top-24 space-y-4">
+      <!-- Profile meta -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Profile details
+        </h3>
+
+        <dl class="mt-3 space-y-3 text-sm">
+          {% if page.organization %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Organization</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.organization }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.role %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Role</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.role }}</dd>
+            </div>
+          {% endif %}
+
+          {% with langs=page.languages.all %}
+            {% if langs %}
+              <div>
+                <dt class="text-slate-500 dark:text-slate-400 mb-1">Languages</dt>
+                <dd class="flex flex-wrap gap-1.5">
+                  {% for l in langs %}
+                    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+                      {{ l.name }}
+                    </span>
+                  {% endfor %}
+                </dd>
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          {% with regs=page.regions.all %}
+            {% if regs %}
+              <div>
+                <dt class="text-slate-500 dark:text-slate-400 mb-1">Regions</dt>
+                <dd class="flex flex-wrap gap-1.5">
+                  {% for r in regs %}
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs border border-emerald-100 dark:border-slate-700">
+                      {{ r.name }}
+                    </span>
+                  {% endfor %}
+                </dd>
+              </div>
+            {% endif %}
+          {% endwith %}
+        </dl>
+      </section>
+
+      <!-- Expertise -->
+      {% with topics=page.expertise.all %}
+        {% if topics %}
+          <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Expertise
+            </h3>
+
+            <div class="mt-2 flex flex-wrap gap-2">
+              {% for t in topics %}
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+                  {{ t.name }}
+                </span>
+              {% endfor %}
+            </div>
+          </section>
         {% endif %}
       {% endwith %}
-      </ul>
-    </div>
 
-    {% if page.expertise.all %}
-      <div class="mt-4 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Expertise</h3>
-        <div class="mt-2 flex flex-wrap gap-2">
-          {% for t in page.expertise.all %}
-            <span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ t.name }}</span>
-          {% endfor %}
+      <!-- Quick links -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Explore more
+        </h3>
+
+        <div class="mt-3 grid gap-2">
+          <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Expert directory</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Resources</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Webinars</span>
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
-      </div>
-    {% endif %}
+      </section>
+    </div>
   </aside>
 </div>
 {% endblock %}

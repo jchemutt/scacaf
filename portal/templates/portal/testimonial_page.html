@@ -4,69 +4,289 @@
 {% block title %}{{ page.title }} | Impact story{% endblock %}
 
 {% block hero %}
-<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
-  <div class="mx-auto max-w-4xl px-4 py-12">
-    <p class="text-sm text-slate-500 dark:text-slate-400">Impact story</p>
-    <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
-    <div class="mt-3 text-slate-600 dark:text-slate-300">
-      <span class="font-medium">{{ page.author }}</span>
-      {% if page.role or page.org %} · {{ page.role }}{% if page.role and page.org %}, {% endif %}{{ page.org }}{% endif %}
-    </div>
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at_35%_20%,black,transparent)] bg-[radial-gradient(1200px_650px_at_-5%_-20%,rgba(16,185,129,.10),transparent)]"></div>
+  </div>
 
-    {% if page.topics.exists %}
-      <div class="mt-4 flex flex-wrap gap-2">
-        {% for tp in page.topics.all %}
-          <span class="px-2.5 py-1 rounded-full text-xs bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
-            {{ tp.name }}
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-600 transition">Home</a>
+      <span>›</span>
+      <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}" class="hover:text-emerald-600 transition">Impact stories</a>
+      <span>›</span>
+      <span class="text-slate-700 dark:text-slate-200">{{ page.title }}</span>
+    </nav>
+
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+      <!-- Main hero content -->
+      <div class="lg:col-span-9">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+            Impact story
           </span>
-        {% endfor %}
+          {% if page.topics.exists %}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700">
+              {{ page.topics.all|length }} topic{{ page.topics.all|length|pluralize }}
+            </span>
+          {% endif %}
+        </div>
+
+        <h1 class="mt-2 text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          {{ page.title }}
+        </h1>
+
+        <div class="mt-2 text-slate-600 dark:text-slate-300 text-sm md:text-base">
+          <span class="font-medium">{{ page.author }}</span>
+          {% if page.role or page.org %}
+            · {{ page.role }}{% if page.role and page.org %}, {% endif %}{{ page.org }}
+          {% endif %}
+        </div>
+
+        {% if page.topics.exists %}
+          <div class="mt-4 flex flex-wrap gap-2">
+            {% for tp in page.topics.all %}
+              <span class="px-2.5 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700">
+                {{ tp.name }}
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
+
+      <!-- Hero actions -->
+      <div class="lg:col-span-3">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur p-3">
+          <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Quick actions
+          </div>
+
+          <div class="mt-3 grid gap-2">
+            <a href="{{ page.get_parent.url }}"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+              ← Back to stories
+            </a>
+
+            {% if page.about_resource %}
+              <a href="{{ page.about_resource.url }}"
+                 class="inline-flex items-center justify-center px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition text-sm">
+                View resource
+              </a>
+            {% endif %}
+
+            {% if page.about_webinar %}
+              <a href="{{ page.about_webinar.url }}"
+                 class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+                View webinar
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<article class="mx-auto max-w-4xl">
-  <!-- Quote -->
-  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft">
-    <blockquote class="text-lg leading-relaxed">
-      “{{ page.quote }}”
-    </blockquote>
-  </div>
+<div class="grid lg:grid-cols-12 gap-8">
+  <!-- Main article -->
+  <article class="lg:col-span-8 space-y-6">
+    <!-- Quote card -->
+    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6 shadow-soft">
+      <div class="flex items-start gap-3">
+        <div class="shrink-0 mt-1 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7.17 6A4.17 4.17 0 003 10.17V18h8v-7H7.41A2.59 2.59 0 019.94 9L11 8.94V6H7.17zm10 0A4.17 4.17 0 0013 10.17V18h8v-7h-3.59a2.59 2.59 0 012.53-2L21 8.94V6h-3.83z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Featured quote
+          </p>
+          <blockquote class="mt-2 text-lg md:text-xl leading-relaxed text-slate-800 dark:text-slate-100">
+            “{{ page.quote }}”
+          </blockquote>
+          <cite class="mt-3 block text-sm not-italic text-slate-500 dark:text-slate-400">
+            — {{ page.author }}{% if page.role or page.org %}, {{ page.role }}{% if page.role and page.org %} ({{ page.org }}){% elif page.org %}{{ page.org }}{% endif %}{% endif %}
+          </cite>
+        </div>
+      </div>
+    </section>
 
-  <!-- Optional video -->
-  {% if page.video %}
-    <div class="mt-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black">
-      {% media page.video %}
-    </div>
-  {% endif %}
+    <!-- Optional story body (supports common field names if present) -->
+    {% if page.story_body or page.story or page.body or page.content %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">
+          Story
+        </h2>
 
-  <!-- Related objects -->
-  <div class="mt-10 grid sm:grid-cols-2 gap-6">
-    {% if page.about_resource %}
-      <a href="{{ page.about_resource.url }}" class="block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-brand-500 hover:shadow-soft transition">
-        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">About resource</p>
-        <p class="mt-1 font-semibold line-clamp-2">{{ page.about_resource.title }}</p>
-      </a>
+        <div class="prose dark:prose-invert max-w-none prose-slate prose-headings:tracking-tight prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {% if page.story_body %}
+            {{ page.story_body|richtext }}
+          {% elif page.story %}
+            {{ page.story|richtext }}
+          {% elif page.body %}
+            {{ page.body|richtext }}
+          {% elif page.content %}
+            {{ page.content|richtext }}
+          {% endif %}
+        </div>
+      </section>
     {% endif %}
-    {% if page.about_webinar %}
-      <a href="{{ page.about_webinar.url }}" class="block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-brand-500 hover:shadow-soft transition">
-        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">About webinar</p>
-        <p class="mt-1 font-semibold line-clamp-2">{{ page.about_webinar.title }}</p>
-      </a>
-    {% endif %}
-  </div>
 
-  <!-- Back / CTA -->
-  <div class="mt-12 flex items-center justify-between">
-    <a href="{{ page.get_parent.url }}" class="inline-flex items-center gap-2 text-sm hover:underline">
-      ← Back to Impact stories
-    </a>
-    <div class="flex items-center gap-2">
-      {% if page.about_resource %}<a class="px-3 py-2 rounded-lg border text-sm hover:bg-slate-50 dark:hover:bg-slate-900" href="{{ page.about_resource.url }}">View resource</a>{% endif %}
-      {% if page.about_webinar %}<a class="px-3 py-2 rounded-lg border text-sm hover:bg-slate-50 dark:hover:bg-slate-900" href="{{ page.about_webinar.url }}">View webinar</a>{% endif %}
+    <!-- Optional video -->
+    {% if page.video %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <div class="mb-3">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Video story
+          </h2>
+        </div>
+        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black">
+          {% media page.video %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Related content -->
+    {% if page.about_resource or page.about_webinar %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <span>Related learning content</span>
+              <span aria-hidden="true">🔗</span>
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Explore the resource or webinar connected to this story.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 grid sm:grid-cols-2 gap-6">
+          {% if page.about_resource %}
+            {% include "portal/includes/resource_card.html" with r=page.about_resource %}
+          {% endif %}
+
+          {% if page.about_webinar %}
+            {% include "portal/includes/webinar_card.html" with webinar=page.about_webinar %}
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Bottom nav -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+      <a href="{{ page.get_parent.url }}"
+         class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-300 transition">
+        ← Back to Impact stories
+      </a>
+
+      <div class="flex flex-wrap items-center gap-2">
+        {% if page.about_resource %}
+          <a href="{{ page.about_resource.url }}"
+             class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            View resource
+          </a>
+        {% endif %}
+        {% if page.about_webinar %}
+          <a href="{{ page.about_webinar.url }}"
+             class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            View webinar
+          </a>
+        {% endif %}
+      </div>
     </div>
-  </div>
-</article>
+  </article>
+
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4">
+    <div class="lg:sticky lg:top-24 space-y-4">
+      <!-- Story metadata -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Story details
+        </h3>
+
+        <dl class="mt-3 space-y-3 text-sm">
+          {% if page.author %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Author</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.author }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.role %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Role</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.role }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.org %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Organization</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.org }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.video %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Video</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">Available</dd>
+            </div>
+          {% endif %}
+        </dl>
+      </section>
+
+      <!-- Topic tags -->
+      {% if page.topics.exists %}
+        <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Topics
+          </h3>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            {% for tp in page.topics.all %}
+              <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}?topic={{ tp.name|urlencode }}"
+                 class="px-2.5 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-slate-700 dark:hover:text-emerald-300 transition">
+                {{ tp.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      <!-- Explore more -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Explore more
+        </h3>
+
+        <div class="mt-3 grid gap-2">
+          <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>All impact stories</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Resources</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Webinars</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </aside>
+</div>
 {% endblock %}

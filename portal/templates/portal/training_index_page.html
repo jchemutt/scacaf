@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}Trainings | SCACAF E-Hub{% endblock %}
+
+{% block extra_head %}
+<style>
+  .training-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+  }
+  .featured-scroll {
+    scroll-snap-type: x mandatory;
+  }
+  .featured-scroll > * {
+    scroll-snap-align: start;
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 opacity-70 dark:opacity-25"
+         style="background-image:
+           radial-gradient(circle at 15% 15%, rgba(16,185,129,.14), transparent 34%),
+           radial-gradient(circle at 85% 10%, rgba(20,184,166,.12), transparent 34%),
+           radial-gradient(circle at 75% 80%, rgba(14,165,233,.10), transparent 40%);">
+    </div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-300 uppercase">
+          Capacity Building
+        </p>
+        <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Trainings &amp; Learning Pathways
+        </h1>
+
+        {% if page.intro %}
+          <div class="mt-2 max-w-3xl text-slate-600 dark:text-slate-300">
+            {{ page.intro|richtext }}
+          </div>
+        {% else %}
+          <p class="mt-2 max-w-3xl text-slate-600 dark:text-slate-300">
+            Practical learning for climate finance readiness, concept note development, MEL,
+            and adaptation investment design.
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 shrink-0">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-3 py-2">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">Programs</div>
+          <div class="text-lg font-bold text-slate-900 dark:text-white">{{ trainings.count }}</div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-3 py-2">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">Featured</div>
+          <div class="text-lg font-bold text-slate-900 dark:text-white">{{ featured_trainings|length }}</div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-3 py-2">
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">Open</div>
+          <div class="text-lg font-bold text-slate-900 dark:text-white">
+            {% for v,l in training_statuses %}{% if v == "open" %}•{% endif %}{% endfor %}{{ trainings|length }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="space-y-6">
+
+  <!-- Filter toolbar -->
+  <form method="get"
+        id="trainingFilterForm"
+        data-training-filter-form
+        class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 md:p-5">
+
+    <!-- Row 1: Search + Sort -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-3">
+      <label class="relative block">
+        <span class="sr-only">Search trainings</span>
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 2a8 8 0 105.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/>
+          </svg>
+        </span>
+        <input
+          type="search"
+          name="q"
+          value="{{ request.GET.q|default_if_none:'' }}"
+          data-training-search
+          placeholder="Search trainings (title, topic, facilitators...)"
+          autocomplete="off"
+          class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-12 py-3.5 text-sm md:text-base outline-none focus:ring-2 focus:ring-emerald-500">
+      </label>
+
+      <div class="relative">
+        <label class="sr-only" for="trainingSort">Sort</label>
+        <select id="trainingSort"
+                name="sort"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3.5 text-sm md:text-base outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="soonest" {% if not request.GET.sort or request.GET.sort == "soonest" %}selected{% endif %}>Soonest</option>
+          <option value="recent" {% if request.GET.sort == "recent" %}selected{% endif %}>Most recent</option>
+          <option value="title_asc" {% if request.GET.sort == "title_asc" %}selected{% endif %}>Title A–Z</option>
+          <option value="title_desc" {% if request.GET.sort == "title_desc" %}selected{% endif %}>Title Z–A</option>
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Row 2: Filters -->
+    <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
+      <!-- Topic -->
+      <div class="relative">
+        <label class="sr-only" for="trainingTopic">Topic</label>
+        <select id="trainingTopic" name="topic"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All topics</option>
+          {% for t in topics %}
+            <option value="{{ t.name }}" {% if request.GET.topic == t.name %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      <!-- Audience -->
+      <div class="relative">
+        <label class="sr-only" for="trainingAudience">Audience</label>
+        <select id="trainingAudience" name="audience"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All audiences</option>
+          {% for a in audiences %}
+            <option value="{{ a.name }}" {% if request.GET.audience == a.name %}selected{% endif %}>{{ a.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      <!-- Language -->
+      <div class="relative">
+        <label class="sr-only" for="trainingLanguage">Language</label>
+        <select id="trainingLanguage" name="language"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All languages</option>
+          {% for lang in languages %}
+            <option value="{{ lang.code }}" {% if request.GET.language == lang.code %}selected{% endif %}>{{ lang.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      <!-- Format -->
+      <div class="relative">
+        <label class="sr-only" for="trainingFormat">Format</label>
+        <select id="trainingFormat" name="format"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All formats</option>
+          {% for value, label in training_formats %}
+            <option value="{{ value }}" {% if request.GET.format == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      <!-- Region -->
+      <div class="relative">
+        <label class="sr-only" for="trainingRegion">Region</label>
+        <select id="trainingRegion" name="region"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All regions</option>
+          {% for r in regions %}
+            <option value="{{ r.name }}" {% if request.GET.region == r.name %}selected{% endif %}>{{ r.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      <!-- Status -->
+      <div class="relative">
+        <label class="sr-only" for="trainingStatus">Status</label>
+        <select id="trainingStatus" name="status"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All statuses</option>
+          {% for value, label in training_statuses %}
+            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Row 3: Level + Active Chips -->
+    <div class="mt-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div class="relative md:w-56">
+        <label class="sr-only" for="trainingLevel">Level</label>
+        <select id="trainingLevel" name="level"
+                class="training-select w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 pr-10 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="">All levels</option>
+          {% for value, label in training_levels %}
+            <option value="{{ value }}" {% if request.GET.level == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+        </span>
+      </div>
+
+      {% if request.GET.q or request.GET.topic or request.GET.audience or request.GET.language or request.GET.format or request.GET.region or request.GET.status or request.GET.level %}
+        <div class="flex flex-wrap items-center gap-2">
+          {% if request.GET.q %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Search: {{ request.GET.q }}</span>{% endif %}
+          {% if request.GET.topic %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Topic: {{ request.GET.topic }}</span>{% endif %}
+          {% if request.GET.audience %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Audience: {{ request.GET.audience }}</span>{% endif %}
+          {% if request.GET.region %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Region: {{ request.GET.region }}</span>{% endif %}
+          {% if request.GET.language %}
+            <span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">
+              Language:
+              {% for lang in languages %}{% if request.GET.language == lang.code %} {{ lang.name }}{% endif %}{% endfor %}
+            </span>
+          {% endif %}
+          {% if request.GET.format %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Format: {{ request.GET.format }}</span>{% endif %}
+          {% if request.GET.status %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Status: {{ request.GET.status }}</span>{% endif %}
+          {% if request.GET.level %}<span class="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">Level: {{ request.GET.level }}</span>{% endif %}
+
+          <a href="{{ page.url }}" class="ml-1 text-xs text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 underline underline-offset-2">
+            Clear all
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- Featured -->
+  {% if featured_trainings %}
+  <section class="space-y-3">
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">Featured trainings</h2>
+      <span class="text-xs text-slate-500 dark:text-slate-400">Curated programs and highlighted cohorts</span>
+    </div>
+
+    <!-- carousel-ready horizontal scroll (can be upgraded to Swiper/Embla later) -->
+    <div class="featured-scroll -mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+      {% for training in featured_trainings %}
+        <div class="min-w-[280px] sm:min-w-[320px] md:min-w-[360px] max-w-[360px] flex-shrink-0">
+          {% include "portal/includes/training_card.html" with training=training %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Results header -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">All trainings</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        {% if trainings.count %}
+          Showing {{ trainings.count }} training{{ trainings.count|pluralize }}.
+        {% else %}
+          No trainings match your current filters.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+    {% if trainings %}
+      {% for training in trainings %}
+        {% include "portal/includes/training_card.html" with training=training %}
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900">
+        <div class="mx-auto mb-3 w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎓</div>
+        <p class="font-medium">No trainings found</p>
+        <p class="text-sm mt-1">Try changing the search terms or filters above.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("[data-training-filter-form]");
+  if (!form) return;
+
+  // Auto-submit on any select change
+  form.querySelectorAll("select").forEach((el) => {
+    el.addEventListener("change", () => {
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
+  });
+
+  // Debounced search
+  const searchInput = form.querySelector("[data-training-search]");
+  if (searchInput) {
+    let timer;
+
+    searchInput.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }, 350);
+    });
+
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        clearTimeout(timer);
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -6,47 +6,104 @@
 {% block hero %}
 <section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
   <div class="absolute inset-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 50%_20%,black,transparent)] bg-[radial-gradient(1200px_600px_at_10%_-20%,rgba(99,102,241,.12),transparent)]"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 45%_20%,black,transparent)] bg-[radial-gradient(1200px_650px_at_10%_-20%,rgba(16,185,129,.12),transparent)]"></div>
   </div>
-  <div class="relative mx-auto max-w-7xl px-4 py-10">
-    <div class="flex items-start gap-4">
-      {% if page.thumbnail %}
-        <div class="hidden sm:block w-24 h-24 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white/50">
-          {% image page.thumbnail fill-192x192 class="w-full h-full object-cover" %}
-        </div>
-      {% endif %}
-      <div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-600 transition">Home</a>
+      <span>›</span>
+      <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}" class="hover:text-emerald-600 transition">Repository</a>
+      <span>›</span>
+      <span class="text-slate-700 dark:text-slate-200">{{ page.title }}</span>
+    </nav>
+
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+      <!-- Left content -->
+      <div class="lg:col-span-9">
         <div class="flex flex-wrap items-center gap-2">
-          <p class="text-xs inline-flex px-2 py-1 rounded-md bg-black/60 text-white backdrop-blur">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-900 text-white dark:bg-white dark:text-slate-900">
             {{ page.get_kind_display }}
-          </p>
+          </span>
+
           {% if page.learning_order %}
-            <p class="text-xs inline-flex px-2 py-1 rounded-md bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
-              Step {{ page.learning_order }}
-            </p>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700">
+              Learning path · Step {{ page.learning_order }}
+            </span>
+          {% endif %}
+
+          {% if page.date %}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {{ page.date|date:"M j, Y" }}
+            </span>
           {% endif %}
         </div>
 
-        <h1 class="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
-        <p class="mt-2 text-slate-600 dark:text-slate-300">{{ page.date|date:"M j, Y" }}</p>
-      </div>
-    </div>
+        <h1 class="mt-3 text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          {{ page.title }}
+        </h1>
 
-    <!-- Meta chips -->
-    <div class="mt-4 flex flex-wrap gap-2">
-      {% for t in page.topics.all %}
-        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ t.name }}</span>
-      {% endfor %}
-      {% for a in page.audiences.all %}
-        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ a.name }}</span>
-      {% endfor %}
-      {% for r in page.regions.all %}
-        <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">{{ r.name }}</span>
-      {% endfor %}
-      {% for l in page.languages.all %}
-        <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs">{{ l.name }}</span>
-      {% endfor %}
+        {% if page.abstract %}
+          <div class="mt-3 text-slate-600 dark:text-slate-300 text-sm md:text-base max-w-4xl leading-relaxed">
+            {{ page.abstract|richtext }}
+          </div>
+        {% endif %}
+
+        <!-- Meta chips -->
+        <div class="mt-4 flex flex-wrap gap-2">
+          {% for t in page.topics.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+              {{ t.name }}
+            </span>
+          {% endfor %}
+          {% for a in page.audiences.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+              {{ a.name }}
+            </span>
+          {% endfor %}
+          {% for r in page.regions.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">
+              {{ r.name }}
+            </span>
+          {% endfor %}
+          {% for l in page.languages.all %}
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs border border-emerald-100 dark:border-slate-700">
+              {{ l.name }}
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Hero thumbnail / summary card -->
+      <div class="lg:col-span-3">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur p-3">
+          {% if page.thumbnail %}
+            <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+              {% image page.thumbnail fill-480x320 class="w-full h-40 object-cover" %}
+            </div>
+          {% else %}
+            <div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 h-40 flex items-center justify-center text-slate-400">
+              <div class="text-center">
+                <div class="text-2xl">📘</div>
+                <div class="text-xs mt-1">Resource preview</div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+              ← Back
+            </a>
+            <a href="#resource-links"
+               class="inline-flex items-center justify-center px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition">
+              Downloads
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -54,100 +111,187 @@
 
 {% block content %}
 <div class="grid lg:grid-cols-12 gap-8">
-  <!-- Main -->
-  <article class="lg:col-span-8">
-    {% if page.abstract %}
-      <div class="prose dark:prose-invert max-w-none">
-        {{ page.abstract|richtext }}
-      </div>
-    {% endif %}
-
+  <!-- Main Content -->
+  <article class="lg:col-span-8 space-y-6">
     {% if page.body %}
-      <div class="mt-6 prose dark:prose-invert max-w-none">
-        {{ page.body }}
-      </div>
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="prose dark:prose-invert max-w-none prose-slate prose-headings:tracking-tight prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {{ page.body }}
+        </div>
+      </section>
+    {% elif page.abstract %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="prose dark:prose-invert max-w-none prose-slate">
+          {{ page.abstract|richtext }}
+        </div>
+      </section>
     {% endif %}
 
- 
-    <hr class="mt-10 mb-6 border-slate-200/70 dark:border-slate-800/70">
-
-    <div class="flex flex-col sm:flex-row justify-between gap-3 items-center">
-      {% if page.previous_in_sequence %}
-        <a href="{{ page.previous_in_sequence.url }}"
-           class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-brand-600">
-          <span aria-hidden="true">←</span>
-          <span class="truncate max-w-xs">
-            Previous: {{ page.previous_in_sequence.title }}
+    <!-- Learning sequence navigation -->
+    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 md:p-5">
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <h2 class="text-sm font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
+          Learning sequence
+        </h2>
+        {% if page.learning_order %}
+          <span class="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300">
+            Step {{ page.learning_order }}
           </span>
-        </a>
-      {% else %}
-        <span class="text-xs text-slate-400">Start of learning sequence</span>
-      {% endif %}
+        {% endif %}
+      </div>
 
-      {% if page.next_in_sequence %}
-        <a href="{{ page.next_in_sequence.url }}"
-           class="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700">
-          <span class="truncate max-w-xs text-right">
-            Next: {{ page.next_in_sequence.title }}
-          </span>
-          <span aria-hidden="true">→</span>
-        </a>
-      {% else %}
-        <span class="text-xs text-slate-400">End of learning sequence</span>
-      {% endif %}
-    </div>
+      <div class="grid sm:grid-cols-2 gap-3">
+        {% if page.previous_in_sequence %}
+          <a href="{{ page.previous_in_sequence.url }}"
+             class="group rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+            <div class="text-xs text-slate-500 dark:text-slate-400">Previous</div>
+            <div class="mt-1 text-sm font-medium text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 line-clamp-2">
+              ← {{ page.previous_in_sequence.title }}
+            </div>
+          </a>
+        {% else %}
+          <div class="rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-3 text-xs text-slate-400">
+            Start of learning sequence
+          </div>
+        {% endif %}
+
+        {% if page.next_in_sequence %}
+          <a href="{{ page.next_in_sequence.url }}"
+             class="group rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition text-left sm:text-right">
+            <div class="text-xs text-slate-500 dark:text-slate-400">Next</div>
+            <div class="mt-1 text-sm font-medium text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 line-clamp-2">
+              {{ page.next_in_sequence.title }} →
+            </div>
+          </a>
+        {% else %}
+          <div class="rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-3 text-xs text-slate-400 sm:text-right">
+            End of learning sequence
+          </div>
+        {% endif %}
+      </div>
+    </section>
   </article>
 
   <!-- Sidebar -->
   <aside class="lg:col-span-4">
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Downloads &amp; Links
-      </h2>
+    <div class="lg:sticky lg:top-24 space-y-4">
+      <!-- Resource details -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Resource details
+        </h2>
 
-      {% if page.files.all %}
-        <div class="mt-3 space-y-2">
-          {% for f in page.files.all %}
-            <a href="{{ f.document.url }}"
-               class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
-              <svg class="w-4 h-4" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M5 20h14v-2H5v2zM11 4v8.17l-3.59-3.58L6 10l6 6 6-6-1.41-1.41L13 12.17V4h-2z"/>
-              </svg>
-              <span class="text-sm">{{ f.label|default:f.document.title }}</span>
-            </a>
-          {% endfor %}
+        <dl class="mt-3 space-y-3 text-sm">
+          <div class="flex justify-between gap-3">
+            <dt class="text-slate-500 dark:text-slate-400">Type</dt>
+            <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.get_kind_display }}</dd>
+          </div>
+
+          {% if page.date %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Published</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">{{ page.date|date:"M j, Y" }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.learning_order %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Learning step</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">Step {{ page.learning_order }}</dd>
+            </div>
+          {% endif %}
+
+          {% if page.languages.all %}
+            <div>
+              <dt class="text-slate-500 dark:text-slate-400 mb-1">Languages</dt>
+              <dd class="flex flex-wrap gap-1.5">
+                {% for l in page.languages.all %}
+                  <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 text-xs">{{ l.name }}</span>
+                {% endfor %}
+              </dd>
+            </div>
+          {% endif %}
+        </dl>
+      </section>
+
+      <!-- Downloads & links -->
+      <section id="resource-links" class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Downloads &amp; links
+          </h2>
+          <div class="text-xs text-slate-400">
+            {% if page.files.all %}{{ page.files.all|length }} file{{ page.files.all|length|pluralize }}{% endif %}
+            {% if page.files.all and page.links.all %} · {% endif %}
+            {% if page.links.all %}{{ page.links.all|length }} link{{ page.links.all|length|pluralize }}{% endif %}
+          </div>
         </div>
-      {% endif %}
 
-      {% if page.links.all %}
-        <div class="mt-4 space-y-2">
-          {% for l in page.links.all %}
-            <a href="{{ l.url }}" target="_blank" rel="noopener"
-               class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200/70 dark:border-slate-800">
-              <svg class="w-4 h-4" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H5a2 2 0 0 0-2 2v5h2V5zm0 14v-5H3v5a2 2 0 0 0 2 2h5v-2H5z"/>
-              </svg>
-              <span class="text-sm">{{ l.label|default:l.url }}</span>
-            </a>
-          {% endfor %}
-        </div>
-      {% endif %}
+        {% if page.files.all %}
+          <div class="mt-3 space-y-2">
+            {% for f in page.files.all %}
+              <a href="{{ f.document.url }}"
+                 class="group flex items-center gap-3 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:border-emerald-200 dark:hover:border-emerald-700 transition">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M5 20h14v-2H5v2zM11 4v8.17l-3.59-3.58L6 10l6 6 6-6-1.41-1.41L13 12.17V4h-2z"/>
+                  </svg>
+                </span>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 line-clamp-1">
+                    {{ f.label|default:f.document.title }}
+                  </div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Download file</div>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
 
-      {% if not page.files.all and not page.links.all %}
-        <p class="mt-3 text-sm text-slate-500">No attachments or links.</p>
+        {% if page.links.all %}
+          <div class="{% if page.files.all %}mt-4{% else %}mt-3{% endif %} space-y-2">
+            {% for l in page.links.all %}
+              <a href="{{ l.url }}" target="_blank" rel="noopener"
+                 class="group flex items-center gap-3 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:border-emerald-200 dark:hover:border-emerald-700 transition">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H5a2 2 0 0 0-2 2v5h2V5zm0 14v-5H3v5a2 2 0 0 0 2 2h5v-2H5z"/>
+                  </svg>
+                </span>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 line-clamp-1">
+                    {{ l.label|default:l.url }}
+                  </div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">External link</div>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if not page.files.all and not page.links.all %}
+          <div class="mt-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-4 text-center">
+            <div class="text-xl mb-1">📎</div>
+            <p class="text-sm font-medium text-slate-700 dark:text-slate-200">No attachments yet</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Files and links for this resource will appear here.
+            </p>
+          </div>
+        {% endif %}
+      </section>
+
+      <!-- Tags -->
+      {% if page.tags.all %}
+        <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Tags</h3>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {% for tag in page.tags.all %}
+              <span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-200">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </section>
       {% endif %}
     </div>
-
-    {% if page.tags.all %}
-      <div class="mt-4 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Tags</h3>
-        <div class="mt-2 flex flex-wrap gap-2">
-          {% for tag in page.tags.all %}
-            <span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs">#{{ tag }}</span>
-          {% endfor %}
-        </div>
-      </div>
-    {% endif %}
   </aside>
 </div>
 
@@ -155,9 +299,20 @@
 {% with related=page.related_by_topic %}
   {% if related %}
     <section class="mt-12">
-      <h2 class="text-xl font-semibold flex items-center gap-2">
-        <span>Related resources</span><span class="text-base">✨</span>
-      </h2>
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold tracking-tight">Related resources</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Similar content based on shared topics and themes.
+          </p>
+        </div>
+        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+           class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition">
+          Browse all
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
       <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {% for r in related %}
           {% include "portal/includes/resource_card.html" with r=r %}

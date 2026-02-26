@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}
+  {{ page.seo_title|default:page.title }} | SCACAF E-Hub
+{% endblock %}
+
+{% block hero %}
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at 30%_30%,black,transparent)]
+                bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(16,185,129,.10),transparent)]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-10 md:py-12">
+    <div class="max-w-4xl">
+      {% if page.hero_kicker %}
+        <p class="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-300 uppercase">
+          {{ page.hero_kicker }}
+        </p>
+      {% endif %}
+
+      <h1 class="mt-1 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+        {{ page.hero_title }}
+      </h1>
+
+      {% if page.hero_intro %}
+        <div class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl prose prose-sm md:prose-base max-w-none prose-slate dark:prose-invert prose-p:my-2 prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {{ page.hero_intro|richtext }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+
+{# ===================== Optional live stats strip ===================== #}
+{% if page.show_live_stats and resource_count or expert_count or webinar_count or training_count %}
+<section class="mb-8">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+    {% if resource_count %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Resources</p>
+        <p class="mt-1 text-2xl font-bold">{{ resource_count }}</p>
+      </div>
+    {% endif %}
+    {% if expert_count %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Experts</p>
+        <p class="mt-1 text-2xl font-bold">{{ expert_count }}</p>
+      </div>
+    {% endif %}
+    {% if webinar_count %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Webinars</p>
+        <p class="mt-1 text-2xl font-bold">{{ webinar_count }}</p>
+      </div>
+    {% endif %}
+    {% if training_count %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Trainings</p>
+        <p class="mt-1 text-2xl font-bold">{{ training_count }}</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# ===================== Vision + Mission ===================== #}
+<section class="mb-10 md:mb-12">
+  <div class="grid lg:grid-cols-2 gap-5 md:gap-6">
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+      <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 mb-3">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 4a9 9 0 1 0 9 9a9.01 9.01 0 0 0-9-9Zm0 2c2.14 0 4.09.84 5.54 2.22L12 14V6Zm-7 7a7 7 0 0 1 5-6.71V17l8.52-8.52A7 7 0 1 1 5 13Z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+        {{ page.vision_title|default:"Vision" }}
+      </h2>
+      {% if page.vision_text %}
+        <div class="mt-3 prose prose-sm md:prose-base max-w-none prose-slate dark:prose-invert prose-p:my-2 prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {{ page.vision_text|richtext }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+      <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 mb-3">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l7 4v6c0 5-3.5 9.74-7 10c-3.5-.26-7-5-7-10V6l7-4Zm0 2.2L7 7v5c0 3.72 2.46 7.69 5 8c2.54-.31 5-4.28 5-8V7l-5-2.8Z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+        {{ page.mission_title|default:"Mission" }}
+      </h2>
+      {% if page.mission_text %}
+        <div class="mt-3 prose prose-sm md:prose-base max-w-none prose-slate dark:prose-invert prose-p:my-2 prose-a:text-emerald-700 dark:prose-a:text-emerald-300">
+          {{ page.mission_text|richtext }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+{# ===================== Audiences ===================== #}
+<section class="mb-10 md:mb-12">
+  <div class="mb-4">
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight">
+      {{ page.audiences_title|default:"Who this hub is for" }}
+    </h2>
+    {% if page.audiences_intro %}
+      <div class="mt-2 text-slate-600 dark:text-slate-300 prose prose-sm md:prose-base max-w-none prose-slate dark:prose-invert">
+        {{ page.audiences_intro|richtext }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+    {% for card in page.about_audiences.all %}
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 mb-3">
+          {% if card.icon == "users" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11a4 4 0 1 0-3.999-4A4 4 0 0 0 16 11Zm-8 1a4 4 0 1 0-4-4a4 4 0 0 0 4 4Zm8 2c-2.33 0-7 1.17-7 3.5V20h14v-2.5C23 15.17 18.33 14 16 14ZM8 14c-.29 0-.62.02-.97.05C5.08 14.22 1 15.1 1 17.5V20h6v-2.5c0-1.33.69-2.5 1.87-3.36A8.3 8.3 0 0 0 8 14Z"/></svg>
+          {% elif card.icon == "briefcase" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3H3V9a2 2 0 0 1 2-2h3V6a2 2 0 0 1 2-2Zm4 3V6h-4v1h4ZM3 13h8v2h2v-2h8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6Z"/></svg>
+          {% elif card.icon == "bank" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 8v2h20V8L12 3Zm-8 9h2v6H4v-6Zm4 0h2v6H8v-6Zm4 0h2v6h-2v-6Zm4 0h2v6h-2v-6ZM2 20h20v2H2v-2Z"/></svg>
+          {% elif card.icon == "graduation-cap" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3Zm-7 9.18V16c0 2.21 3.13 4 7 4s7-1.79 7-4v-3.82l-7 3.82-7-3.82Z"/></svg>
+          {% elif card.icon == "globe" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm6.93 9h-3.05a15.7 15.7 0 0 0-1.38-5A8.03 8.03 0 0 1 18.93 11ZM12 4c.84 0 2.37 2.14 2.95 7H9.05C9.63 6.14 11.16 4 12 4ZM4.07 13h3.05a15.7 15.7 0 0 0 1.38 5A8.03 8.03 0 0 1 4.07 13ZM7.12 11H4.07a8.03 8.03 0 0 1 4.43-5a15.7 15.7 0 0 0-1.38 5ZM12 20c-.84 0-2.37-2.14-2.95-7h5.9c-.58 4.86-2.11 7-2.95 7Zm2.5-2a15.7 15.7 0 0 0 1.38-5h3.05a8.03 8.03 0 0 1-4.43 5Z"/></svg>
+          {% else %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2Zm7-16 6 6h-4v6h-4v-6H6l6-6Z"/></svg>
+          {% endif %}
+        </div>
+
+        <h3 class="font-semibold text-slate-900 dark:text-white">{{ card.title }}</h3>
+        {% if card.description %}
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {{ card.description|linebreaksbr }}
+          </p>
+        {% endif %}
+      </div>
+    {% empty %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-sm text-slate-500 dark:text-slate-400">
+       
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ===================== Features ===================== #}
+<section class="mb-10 md:mb-12">
+  <div class="mb-4">
+    <h2 class="text-2xl md:text-3xl font-bold tracking-tight">
+      {{ page.features_title|default:"What you can find in the hub" }}
+    </h2>
+    {% if page.features_intro %}
+      <div class="mt-2 text-slate-600 dark:text-slate-300 prose prose-sm md:prose-base max-w-none prose-slate dark:prose-invert">
+        {{ page.features_intro|richtext }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+    {% for card in page.about_features.all %}
+      <div class="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition">
+        <div class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 mb-3">
+          {% if card.icon == "book" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5a3 3 0 0 1 3-3h13v18H7a3 3 0 0 0-3 3V5Zm3-1a1 1 0 0 0-1 1v14.17A2.98 2.98 0 0 1 7 19h11V4H7Z"/></svg>
+          {% elif card.icon == "video" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2.59l4.29-4.3A1 1 0 0 1 23 4v16a1 1 0 0 1-1.71.71L17 16.41V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5Z"/></svg>
+          {% elif card.icon == "users" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11a4 4 0 1 0-3.999-4A4 4 0 0 0 16 11Zm-8 1a4 4 0 1 0-4-4a4 4 0 0 0 4 4Zm8 2c-2.33 0-7 1.17-7 3.5V20h14v-2.5C23 15.17 18.33 14 16 14ZM8 14c-.29 0-.62.02-.97.05C5.08 14.22 1 15.1 1 17.5V20h6v-2.5c0-1.33.69-2.5 1.87-3.36A8.3 8.3 0 0 0 8 14Z"/></svg>
+          {% elif card.icon == "message-square" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>
+          {% elif card.icon == "graduation-cap" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3Zm-7 9.18V16c0 2.21 3.13 4 7 4s7-1.79 7-4v-3.82l-7 3.82-7-3.82Z"/></svg>
+          {% elif card.icon == "search" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2a8 8 0 1 0 5.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12a6 6 0 0 1 0-12Z"/></svg>
+          {% elif card.icon == "layers" %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 10 5-10 5L2 7l10-5Zm0 9 9.55-4.78L12 1.45 2.45 6.22 12 11Zm10 2-10 5-10-5 1.79-.9L12 16.55l8.21-4.45L22 13Zm0 5-10 5-10-5 1.79-.9L12 21.55l8.21-4.45L22 18Z"/></svg>
+          {% else %}
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z"/></svg>
+          {% endif %}
+        </div>
+
+        <h3 class="font-semibold text-slate-900 dark:text-white">{{ card.title }}</h3>
+
+        {% if card.description %}
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {{ card.description|linebreaksbr }}
+          </p>
+        {% endif %}
+
+        {% if card.href %}
+          <div class="mt-3">
+            <a href="{{ card.href }}"
+               class="inline-flex items-center gap-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline">
+              {{ card.link_label|default:"Explore" }}
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5h5v5h-2V8.41l-7.29 7.3-1.42-1.42 7.3-7.29H14V5ZM5 7h5v2H7v8h8v-3h2v5H5V7Z"/></svg>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    {% empty %}
+      <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-sm text-slate-500 dark:text-slate-400">
+        
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+
+
+
+
+{# ===================== CTA ===================== #}
+<section class="mb-4">
+  <div class="relative overflow-hidden rounded-3xl border border-emerald-200/70 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-700 dark:to-emerald-800 p-6 md:p-8 text-white">
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(800px_300px_at_10%_0%,white,transparent)]"></div>
+    <div class="relative">
+      {% if page.cta_kicker %}
+        <p class="text-xs font-semibold tracking-wide uppercase text-emerald-100">
+          {{ page.cta_kicker }}
+        </p>
+      {% endif %}
+
+      {% if page.cta_title %}
+        <h2 class="mt-1 text-2xl md:text-3xl font-bold tracking-tight">
+          {{ page.cta_title }}
+        </h2>
+      {% endif %}
+
+      {% if page.cta_text %}
+        <div class="mt-2 prose prose-sm md:prose-base prose-invert max-w-3xl prose-p:my-2 prose-a:text-white">
+          {{ page.cta_text|richtext }}
+        </div>
+      {% endif %}
+
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        {% if page.cta_button_label %}
+          <a href="{% if contact_index %}{{ contact_index.url }}{% else %}/contact-us/{% endif %}"
+             class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white text-emerald-700 font-semibold hover:bg-emerald-50 transition">
+            {{ page.cta_button_label }}
+          </a>
+        {% endif %}
+
+        {% if page.cta_secondary_label %}
+          <a href="{% if contact_index %}{{ contact_index.url }}{% else %}/contact-us/{% endif %}"
+             class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-white/40 text-white font-medium hover:bg-white/10 transition">
+            {{ page.cta_secondary_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

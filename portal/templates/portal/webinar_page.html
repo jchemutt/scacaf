@@ -4,110 +4,370 @@
 {% block title %}{{ page.title }} | Webinar{% endblock %}
 
 {% block hero %}
-<section class="bg-gradient-to-b from-slate-100 to-white dark:from-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800/60">
-  <div class="mx-auto max-w-4xl px-4 py-12">
-    <p class="text-sm text-slate-500 dark:text-slate-400">Webinar</p>
-    <h1 class="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight">{{ page.title }}</h1>
+<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
+  <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 [mask-image:radial-gradient(65%_60% at_35%_20%,black,transparent)] bg-[radial-gradient(1200px_650px_at_-5%_-20%,rgba(16,185,129,.10),transparent)]"></div>
+  </div>
 
-    <div class="mt-3 flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-300">
-      <span class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-sm">
-        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M12 7a5 5 0 100 10 5 5 0 000-10zm0-5a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zm0 18a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1zM3 11a1 1 0 011-1h1a1 1 0 010 2H4a1 1 0 01-1-1zm16 0a1 1 0 011-1h1a1 1 0 010 2h-1a1 1 0 01-1-1z"/></svg>
-        {{ page.start_datetime|date:"M j, Y · g:i a" }}
-      </span>
-      {% if page.platform %}
-      <span class="text-sm px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800">{{ page.platform }}</span>
-      {% endif %}
-      {% if page.topics.exists %}
-      <span class="text-sm">•</span>
-      <div class="flex flex-wrap gap-2">
-        {% for t in page.topics.all %}
-          <span class="px-2 py-1 rounded-md text-xs bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300">{{ t.name }}</span>
-        {% endfor %}
+  <div class="relative mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-600 transition">Home</a>
+      <span>›</span>
+      <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}" class="hover:text-emerald-600 transition">Webinars</a>
+      <span>›</span>
+      <span class="text-slate-700 dark:text-slate-200">{{ page.title }}</span>
+    </nav>
+
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+      <!-- Main hero content -->
+      <div class="lg:col-span-8">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+            Webinar
+          </span>
+
+          {% if page.platform %}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700">
+              {{ page.platform }}
+            </span>
+          {% endif %}
+
+          {% if page.topics.exists %}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              {{ page.topics.all|length }} topic{{ page.topics.all|length|pluralize }}
+            </span>
+          {% endif %}
+        </div>
+
+        <h1 class="mt-2 text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          {{ page.title }}
+        </h1>
+
+        <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
+            <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v3H2V6a2 2 0 0 1 2-2h3V2Zm15 9v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9h20ZM6 14h4v4H6v-4Z"/>
+            </svg>
+            <span>{{ page.start_datetime|date:"M j, Y" }}</span>
+            <span class="text-slate-400">·</span>
+            <span>{{ page.start_datetime|date:"g:i a" }}</span>
+          </span>
+
+          {% if page.start_datetime %}
+            <span class="text-xs text-slate-500 dark:text-slate-400">
+              {{ page.start_datetime|date:"l" }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if page.intro %}
+          <div class="mt-4 prose prose-sm md:prose-base max-w-none dark:prose-invert prose-slate">
+            {{ page.intro|richtext }}
+          </div>
+        {% elif page.summary %}
+          <p class="mt-4 text-slate-600 dark:text-slate-300 max-w-3xl">
+            {{ page.summary }}
+          </p>
+        {% elif page.description %}
+          <div class="mt-4 prose prose-sm md:prose-base max-w-none dark:prose-invert prose-slate">
+            {{ page.description|richtext }}
+          </div>
+        {% endif %}
+
+        {% if page.topics.exists %}
+          <div class="mt-4 flex flex-wrap gap-2">
+            {% for t in page.topics.all %}
+              <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}?topic={{ t.name|urlencode }}"
+                 class="px-2.5 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-700 dark:bg-slate-800 dark:text-emerald-300 border border-emerald-100 dark:border-slate-700 hover:bg-emerald-100 dark:hover:bg-slate-700 transition">
+                {{ t.name }}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-      {% endif %}
+
+      <!-- Hero action card -->
+      <div class="lg:col-span-4">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur p-4 shadow-soft">
+          <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Join this session</h2>
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Access registration, related materials, and webinar details.
+          </p>
+
+          <div class="mt-4 grid gap-2">
+            {% if page.registration_url %}
+              <a href="{{ page.registration_url }}" target="_blank" rel="noopener"
+                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition text-sm font-medium">
+                Register now
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
+                </svg>
+              </a>
+            {% endif %}
+
+            <a href="{{ page.get_parent.url }}"
+               class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+              ← Back to webinars
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-
-    {% if page.registration_url %}
-      <div class="mt-4">
-        <a href="{{ page.registration_url }}" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">
-          Register
-          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
-        </a>
-      </div>
-    {% endif %}
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
-<article class="mx-auto max-w-4xl space-y-10">
-  <!-- Speakers -->
-  {% if page.speakers.exists %}
-  <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft">
-    <h2 class="text-lg font-semibold">Speakers</h2>
-    <div class="mt-4 grid sm:grid-cols-2 gap-4">
-      {% for s in page.speakers.all %}
-        <a href="{{ s.url }}" class="flex gap-3 rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:border-brand-500 transition">
-          {% if s.photo %}
-            {% image s.photo fill-64x64 class="w-16 h-16 rounded-xl object-cover" %}
-          {% else %}
-            <div class="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 grid place-items-center text-slate-400">👤</div>
-          {% endif %}
-          <div class="min-w-0">
-            <p class="font-medium">{{ s.title }}</p>
-            <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{{ s.role }}{% if s.role and s.organization %}, {% endif %}{{ s.organization }}</p>
+<div class="grid lg:grid-cols-12 gap-8">
+  <!-- Main content -->
+  <article class="lg:col-span-8 space-y-6">
+
+    <!-- Speakers -->
+    {% if page.speakers.exists %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6 shadow-soft">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight">Speakers</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Meet the experts facilitating this learning session.
+            </p>
           </div>
-        </a>
-      {% endfor %}
+          <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            {{ page.speakers.all|length }}
+          </span>
+        </div>
+
+        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+          {% for s in page.speakers.all %}
+            <a href="{{ s.url }}"
+               class="group flex gap-3 rounded-xl border border-slate-200 dark:border-slate-800 p-3 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-sm transition">
+              {% if s.photo %}
+                {% image s.photo fill-96x96 class="w-16 h-16 rounded-xl object-cover shrink-0" %}
+              {% else %}
+                <div class="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 grid place-items-center text-slate-400 shrink-0">
+                  <svg class="w-7 h-7 opacity-70" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 12a5 5 0 100-10 5 5 0 000 10Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/>
+                  </svg>
+                </div>
+              {% endif %}
+
+              <div class="min-w-0">
+                <p class="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition clamp-1">
+                  {{ s.title }}
+                </p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 clamp-2">
+                  {{ s.role }}{% if s.role and s.organization %}, {% endif %}{{ s.organization }}
+                </p>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Recording -->
+    {% if page.recording %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6 shadow-soft">
+        <h2 class="text-xl font-semibold tracking-tight">Recording</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Watch the webinar recording or embedded playback.
+        </p>
+
+        <div class="mt-4 space-y-3 [&_iframe]:w-full [&_iframe]:min-h-[240px] [&_iframe]:rounded-xl [&_iframe]:border [&_iframe]:border-slate-200 dark:[&_iframe]:border-slate-800">
+          {% for block in page.recording %}
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-3 bg-slate-50/70 dark:bg-slate-950/40">
+              {% include_block block %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Materials -->
+    {% if page.materials %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6 shadow-soft">
+        <h2 class="text-xl font-semibold tracking-tight">Materials</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Slides, references, and supporting files for this session.
+        </p>
+
+        <ul class="mt-4 space-y-2">
+          {% for block in page.materials %}
+            <li class="rounded-xl border border-slate-200 dark:border-slate-800 px-3 py-2.5 bg-slate-50/70 dark:bg-slate-950/40 text-sm">
+              <div class="flex items-start gap-2">
+                <span class="mt-0.5 text-emerald-600 dark:text-emerald-300">•</span>
+                <div class="min-w-0 flex-1">
+                  {% if block.block_type == 'slides' %}
+                    <span class="text-slate-800 dark:text-slate-100">{{ block.value }}</span>
+                  {% else %}
+                    {% include_block block %}
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    <!-- Related resources -->
+    {% if page.related_resources.exists %}
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight">Related resources</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Continue learning with linked materials from the repository.
+            </p>
+          </div>
+          <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            {{ page.related_resources.all|length }}
+          </span>
+        </div>
+
+        <div class="mt-4 grid sm:grid-cols-2 gap-4">
+          {% for r in page.related_resources.all %}
+            <a href="{{ r.url }}"
+               class="group block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-sm transition">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  {{ r.get_kind_display }}
+                </p>
+                <span class="text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition">→</span>
+              </div>
+              <p class="mt-1.5 font-semibold text-slate-900 dark:text-slate-100 clamp-2">
+                {{ r.title }}
+              </p>
+              {% if r.abstract %}
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 clamp-2">
+                  {{ r.abstract }}
+                </p>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Empty helper if content is minimal -->
+    {% if not page.speakers.exists and not page.recording and not page.materials and not page.related_resources.exists %}
+      <section class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center text-slate-600 dark:text-slate-400">
+        <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎥</div>
+        <p class="font-medium">More webinar content coming soon</p>
+        <p class="text-sm mt-1">Details, materials, and recordings will appear here when available.</p>
+      </section>
+    {% endif %}
+
+    <!-- Bottom back link -->
+    <div class="pt-2">
+      <a href="{{ page.get_parent.url }}"
+         class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-300 transition">
+        ← Back to Webinars
+      </a>
     </div>
-  </section>
-  {% endif %}
+  </article>
 
-  <!-- Recording -->
-  {% if page.recording %}
-  <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft">
-    <h2 class="text-lg font-semibold mb-3">Recording</h2>
-    {% for block in page.recording %}
-      {% include_block block %}
-    {% endfor %}
-  </section>
-  {% endif %}
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4">
+    <div class="lg:sticky lg:top-24 space-y-4">
 
-  <!-- Materials -->
-  {% if page.materials %}
-  <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft">
-    <h2 class="text-lg font-semibold mb-3">Materials</h2>
-    <ul class="list-disc list-inside space-y-2">
-      {% for block in page.materials %}
-        {% if block.block_type == 'slides' %}
-          <li>{{ block.value }}</li>
-        {% else %}
-          <li>{% include_block block %}</li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </section>
-  {% endif %}
+      <!-- Session details -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Session details
+        </h3>
 
-  <!-- Related resources -->
-  {% if page.related_resources.exists %}
-  <section>
-    <h2 class="text-lg font-semibold">Related resources</h2>
-    <div class="mt-4 grid sm:grid-cols-2 gap-4">
-      {% for r in page.related_resources.all %}
-        <a href="{{ r.url }}" class="block rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-brand-500 hover:shadow-soft transition">
-          <p class="text-sm text-slate-500 dark:text-slate-400">{{ r.get_kind_display }}</p>
-          <p class="mt-1 font-semibold line-clamp-2">{{ r.title }}</p>
-        </a>
-      {% endfor %}
+        <dl class="mt-3 space-y-3 text-sm">
+          <div class="flex justify-between gap-3">
+            <dt class="text-slate-500 dark:text-slate-400">Date</dt>
+            <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">
+              {{ page.start_datetime|date:"M j, Y" }}
+            </dd>
+          </div>
+
+          <div class="flex justify-between gap-3">
+            <dt class="text-slate-500 dark:text-slate-400">Time</dt>
+            <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">
+              {{ page.start_datetime|date:"g:i a" }}
+            </dd>
+          </div>
+
+          {% if page.platform %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Platform</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">
+                {{ page.platform }}
+              </dd>
+            </div>
+          {% endif %}
+
+          {% if page.registration_url %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Registration</dt>
+              <dd class="font-medium text-emerald-700 dark:text-emerald-300 text-right">
+                Open
+              </dd>
+            </div>
+          {% endif %}
+
+          {% if page.recording %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-slate-500 dark:text-slate-400">Recording</dt>
+              <dd class="font-medium text-slate-800 dark:text-slate-100 text-right">
+                Available
+              </dd>
+            </div>
+          {% endif %}
+        </dl>
+      </section>
+
+      <!-- Topics -->
+      {% if page.topics.exists %}
+        <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Topics
+          </h3>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            {% for t in page.topics.all %}
+              <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}?topic={{ t.name|urlencode }}"
+                 class="px-2.5 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-slate-700 dark:hover:text-emerald-300 transition">
+                {{ t.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      <!-- Explore more -->
+      <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Explore more
+        </h3>
+
+        <div class="mt-3 grid gap-2">
+          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>All webinars</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Resources</span>
+            <span aria-hidden="true">→</span>
+          </a>
+
+          <a href="/trainings/"
+             class="inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+            <span>Trainings</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
     </div>
-  </section>
-  {% endif %}
-
-  <!-- Back -->
-  <div class="pt-4">
-    <a href="{{ page.get_parent.url }}" class="inline-flex items-center gap-2 text-sm hover:underline">← Back to Webinars</a>
-  </div>
-</article>
+  </aside>
+</div>
 {% endblock %}

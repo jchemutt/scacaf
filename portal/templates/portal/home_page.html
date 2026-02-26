@@ -4,350 +4,476 @@
 {% block title %}Home | Knowledge Portal{% endblock %}
 
 {% block hero %}
-<section class="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/60">
-  <!-- Overlay stack -->
+<section class="relative overflow-hidden border-b border-slate-200/70 dark:border-slate-800/70">
+  <!-- Background -->
   <div class="absolute inset-0">
-    <div class="absolute inset-0 bg-gradient-to-b from-brand-50/70 to-white dark:from-slate-900 dark:to-slate-950"></div>
-    <div
-      class="absolute inset-0
-             [mask-image:radial-gradient(65%_60%_at_30%_30%,black,transparent)]
-             bg-[radial-gradient(1200px_600px_at_-10%_-20%,rgba(99,102,241,.12),transparent)]">
+    <div class="absolute inset-0 bg-gradient-to-b from-emerald-50 via-slate-50 to-slate-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950"></div>
+    <div class="absolute inset-0 opacity-60 dark:opacity-20"
+         style="background-image:
+           radial-gradient(circle at 15% 20%, rgba(16,185,129,.18), transparent 34%),
+           radial-gradient(circle at 85% 12%, rgba(14,165,233,.16), transparent 34%),
+           radial-gradient(circle at 82% 78%, rgba(20,184,166,.14), transparent 42%);">
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="relative mx-auto max-w-7xl px-4 py-16 md:py-20 grid md:grid-cols-2 gap-10 items-center">
-
-    <!-- Left: Messaging -->
-    <div>
-      <p class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full text-xs font-medium bg-brand-100 text-brand-700 dark:bg-slate-800 dark:text-brand-300">
-        The SCACAF E-Hub · Climate Adaptation Finance
-      </p>
-
-      <h1 class="mt-3 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-        Unlock <span class="text-brand-600">adaptation finance</span> for a climate-resilient Africa.
-      </h1>
-
-      <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
-        A one-stop hub with practical resources, expert support, and a pan-African climate finance community of practice
-        to turn NDCs &amp; NAPs into <em>bankable</em> adaptation investments.
-      </p>
-
-      <!-- CTAs -->
-      <div class="mt-6 flex flex-wrap items-center gap-3">
-
-  <!-- Browse resources -->
-  <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 text-white font-medium 
-            hover:bg-brand-700 shadow-soft hover:shadow-md transition-all">
-    Browse resources
-    <svg class="w-4 h-4" viewBox="0 0 24 24">
-      <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/>
-    </svg>
-  </a>
-
-  <!-- Community of Practice -->
-  <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700
-            bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium
-            hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-    Community of Practice
-  </a>
-
-  <!-- Join a webinar -->
-  <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-     class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700
-            bg-white/70 dark:bg-slate-900/60 backdrop-blur font-medium
-            hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-    Join a webinar
-  </a>
-
-</div>
-
-
-
-      {% if repo_index %}
-      <!-- Quick search -->
-      <form action="{{ repo_index.url }}" method="get" class="mt-6" x-data>
-        <label class="relative block">
-          <span class="sr-only">Search the repository</span>
-          <input name="q" placeholder="Search the repository…"
-                 class="w-full rounded-2xl border border-slate-300/70 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-5 py-3 pr-12 shadow-soft outline-none focus:ring-2 focus:ring-brand-500"
-                 data-global-search autocomplete="off">
-          <button class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white text-sm">
-            Search
-          </button>
-        </label>
-        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-          Tip: press <kbd class="px-1 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">/</kbd> to focus search.
+  <div class="relative">
+    <!-- Top strip -->
+    <div class="border-b border-emerald-100/80 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/45 backdrop-blur">
+      <div class="mx-auto max-w-7xl px-4 py-2.5 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between text-sm">
+        <p class="text-slate-700 dark:text-slate-200">
+          <span class="font-semibold text-emerald-700 dark:text-emerald-300">SCACAF e-Hub:</span>
+          Practical learning resources, trainings, and expert support for adaptation finance.
         </p>
-      </form>
-      {% endif %}
-
-      <!-- Chips -->
-      <div class="mt-6 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]" style="-webkit-overflow-scrolling:touch;">
-        <div class="flex gap-2 w-max pr-2">
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Climate finance landscape</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Donor research</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Climate rationale</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Theory of Change</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Budget &amp; VfM</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Feasibility &amp; Gender</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">Stakeholder engagement</span>
-          <span class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm transition-colors cursor-default">MEL</span>
-        </div>
+        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+           class="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-medium hover:underline">
+          Browse repository
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+        </a>
       </div>
     </div>
 
-    <!-- Right: Mission / Vision / Values cards -->
-    <div class="grid gap-4">
-      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft transition-transform duration-200 motion-safe:hover:-translate-y-1 hover:shadow-lg">
-        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Mission</p>
-        <p class="mt-1">
-          Catalyzing systems-level climate adaptation in Africa by unlocking climate finance through
-          <em>learning-by-doing</em> capacity initiatives for bankable proposals.
-        </p>
-      </div>
+    <div class="mx-auto max-w-7xl px-4 py-12 md:py-16 lg:py-20 grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+      <!-- Left -->
+      <div class="lg:col-span-7">
+        <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Climate adaptation finance learning hub</p>
 
-      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft transition-transform duration-200 motion-safe:hover:-translate-y-1 hover:shadow-lg">
-        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Vision</p>
-        <p class="mt-1">
-          A climate-resilient Africa with equitable access to climate finance, fostering sustainable development and resilience.
-        </p>
-      </div>
+        <h1 class="mt-3 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-slate-900 dark:text-white">
+          Learn, connect and build
+          <span class="text-emerald-700 dark:text-emerald-300">bankable adaptation projects</span>
+          with confidence.
+        </h1>
 
-      <div class="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 shadow-soft transition-transform duration-200 motion-safe:hover:-translate-y-1 hover:shadow-lg">
-        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Core values</p>
-        <div class="mt-2 flex flex-wrap gap-2">
-          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Inclusivity</span>
-          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Collaboration</span>
-          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Innovation</span>
-          <span class="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 dark:bg-slate-800 dark:text-brand-300 text-xs font-medium">Sustainability</span>
+        <p class="mt-4 max-w-2xl text-base md:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+          Access curated resources, expert networks, webinars, and training pathways to move from climate
+          adaptation ideas to investment-ready action.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="inline-flex items-center gap-2 px-5 py-3 rounded-xl uc-btn-primary font-semibold">
+            Explore resources
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+          </a>
+
+           <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+             class="inline-flex items-center gap-2 px-5 py-3 rounded-xl uc-btn-soft font-medium hover:bg-white dark:hover:bg-slate-800 transition">
+            View trainings
+          </a>
+
+          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
+             class="inline-flex items-center gap-2 px-5 py-3 rounded-xl uc-btn-soft font-medium hover:bg-white dark:hover:bg-slate-800 transition">
+            Join a webinar
+          </a>
         </div>
-        <p class="mt-3 text-xs text-slate-500 dark:text-slate-500">
-          Supported by AGNES &amp; ACBF.
-        </p>
+
+        {% if repo_index %}
+        <form action="{{ repo_index.url }}" method="get" class="mt-6">
+          <label class="relative block">
+            <span class="sr-only">Search</span>
+            <input name="q"
+                   data-global-search
+                   autocomplete="off"
+                   placeholder="Search resources, toolkits, proposal examples, funding guidance..."
+                   class="w-full rounded-2xl border border-slate-300/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/75 px-5 py-3.5 pr-28 shadow-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <button class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-medium">
+              Search
+            </button>
+          </label>
+          <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            Tip: press <kbd class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800">/</kbd> to focus search
+          </p>
+        </form>
+        {% endif %}
+
+        <div class="mt-6 overflow-x-auto hide-scrollbar">
+          <div class="flex gap-2 w-max pr-2">
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white/75 dark:bg-slate-900/75 text-sm">Climate finance readiness</span>
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white/75 dark:bg-slate-900/75 text-sm">Proposal design</span>
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white/75 dark:bg-slate-900/75 text-sm">Trainings &amp; workshops</span>
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white/75 dark:bg-slate-900/75 text-sm">Gender &amp; inclusion</span>
+            <span class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white/75 dark:bg-slate-900/75 text-sm">Monitoring &amp; learning</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="lg:col-span-5">
+        <div class="grid gap-4">
+          <div class="uc-surface rounded-2xl p-5">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-semibold text-slate-900 dark:text-white">What you can do here</h3>
+              <span class="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Active hub
+              </span>
+            </div>
+
+            <div class="mt-4 grid gap-3 text-sm">
+              <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-3 bg-white/60 dark:bg-slate-900/30">
+                <p class="font-medium">Discover resources</p>
+                <p class="mt-1 text-slate-600 dark:text-slate-300">Find toolkits, templates, guidance notes and examples.</p>
+              </div>
+              <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-3 bg-white/60 dark:bg-slate-900/30">
+                <p class="font-medium">Join learning events</p>
+                <p class="mt-1 text-slate-600 dark:text-slate-300">Attend webinars and structured trainings for practical skills.</p>
+              </div>
+              <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-3 bg-white/60 dark:bg-slate-900/30">
+                <p class="font-medium">Connect with experts</p>
+                <p class="mt-1 text-slate-600 dark:text-slate-300">Explore the community of practice for collaboration and support.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="uc-surface rounded-2xl p-4">
+              <p class="text-xs text-slate-500 dark:text-slate-400">Resources</p>
+              <p class="mt-1 text-2xl font-bold">{{ resource_count|default:0 }}</p>
+            </div>
+            <div class="uc-surface rounded-2xl p-4">
+              <p class="text-xs text-slate-500 dark:text-slate-400">Webinars</p>
+              <p class="mt-1 text-2xl font-bold">{{ webinar_count|default:0 }}</p>
+            </div>
+            <div class="uc-surface rounded-2xl p-4">
+              <p class="text-xs text-slate-500 dark:text-slate-400">Experts</p>
+              <p class="mt-1 text-2xl font-bold">{{ expert_count|default:0 }}</p>
+            </div>
+            <div class="uc-surface rounded-2xl p-4">
+              <p class="text-xs text-slate-500 dark:text-slate-400">Trainings</p>
+              <p class="mt-1 text-2xl font-bold">{{ training_count|default:0 }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
 </section>
 {% endblock %}
 
-
-
-
 {% block content %}
-<section class="mt-10 mb-16">
-  <div class="mx-auto max-w-7xl px-4 space-y-16">
+<div class="space-y-14 md:space-y-16 pb-8">
 
-    <!-- Summary stats (Resources / Webinars / Impact Stories / Experts) -->
-    <section>
-      <div class="text-center">
-        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">
-          Join our global community of learners today!
-        </h2>
+  <!-- Learning pathways -->
+  <section x-data="{tab:'readiness'}" class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 md:p-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Learning pathways</p>
+        <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Explore by focus area</h2>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          Follow a guided path based on your role and stage of project preparation.
+        </p>
       </div>
 
-      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="flex flex-wrap gap-2">
+        <button type="button"
+                @click="tab='readiness'"
+                :class="tab==='readiness' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700'"
+                class="px-3 py-2 rounded-xl border text-sm font-medium transition">
+          Readiness
+        </button>
+        <button type="button"
+                @click="tab='design'"
+                :class="tab==='design' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700'"
+                class="px-3 py-2 rounded-xl border text-sm font-medium transition">
+          Project Design
+        </button>
+        <button type="button"
+                @click="tab='delivery'"
+                :class="tab==='delivery' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700'"
+                class="px-3 py-2 rounded-xl border text-sm font-medium transition">
+          Implementation
+        </button>
+      </div>
+    </div>
 
-        <!-- Resources -->
-        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-           class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft hover:shadow-lg transition-all">
-          <div class="p-6 flex flex-col items-center text-center gap-3">
-            <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-slate-800 flex items-center justify-center">
-              <svg class="w-7 h-7 text-brand-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M6 4a2 2 0 0 0-2 2v12a3 3 0 0 1 3-3h12V6a2 2 0 0 0-2-2H6zm13 14H7a1 1 0 0 0-1 1v1h13v-2z"/>
-              </svg>
+    <div class="mt-5 grid lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-8">
+        <div x-show="tab==='readiness'" x-transition.opacity x-cloak class="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
+          <h3 class="font-semibold text-lg">Finance readiness</h3>
+          <p class="mt-2 text-slate-600 dark:text-slate-300">Build a strong financing case with donor alignment, climate rationale and readiness support resources.</p>
+          <ul class="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Climate finance landscape</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Fund requirements &amp; formats</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Readiness support</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Concept note preparation</li>
+          </ul>
+        </div>
+
+        <div x-show="tab==='design'" x-transition.opacity x-cloak class="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
+          <h3 class="font-semibold text-lg">Project design</h3>
+          <p class="mt-2 text-slate-600 dark:text-slate-300">Strengthen proposals with templates and examples for theory of change, budgeting and inclusive design.</p>
+          <ul class="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Climate rationale</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Theory of change</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Budgeting &amp; co-finance</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Gender &amp; social inclusion</li>
+          </ul>
+        </div>
+
+        <div x-show="tab==='delivery'" x-transition.opacity x-cloak class="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
+          <h3 class="font-semibold text-lg">Implementation &amp; learning</h3>
+          <p class="mt-2 text-slate-600 dark:text-slate-300">Improve delivery quality with tools for stakeholder engagement, governance and MEL systems.</p>
+          <ul class="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Stakeholder engagement</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Implementation planning</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">MEL frameworks</li>
+            <li class="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-3 py-2">Reporting &amp; learning loops</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 h-full bg-slate-50/80 dark:bg-slate-800/30">
+          <h3 class="font-semibold">Who is this for?</h3>
+          <div class="mt-3 space-y-3 text-sm">
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3">
+              <p class="font-medium">Government &amp; NDC teams</p>
+              <p class="mt-1 text-slate-600 dark:text-slate-300">Translate national priorities into fundable adaptation pipelines.</p>
             </div>
-            <div class="text-4xl font-extrabold">{{ resource_count|default:0 }}</div>
-            <div class="text-slate-500 dark:text-slate-400">Resources</div>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3">
+              <p class="font-medium">Project developers</p>
+              <p class="mt-1 text-slate-600 dark:text-slate-300">Use examples and templates to strengthen concept notes and proposals.</p>
+            </div>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3">
+              <p class="font-medium">Facilitators &amp; partners</p>
+              <p class="mt-1 text-slate-600 dark:text-slate-300">Access materials for learning programs and capacity support.</p>
+            </div>
           </div>
-        </a>
 
-        <!-- Webinars -->
+          <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+             <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+               class="inline-flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline">
+              Go to trainings page
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Resources -->
+  <section>
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Learning resources</p>
+        <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Featured resources</h2>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Curated materials to support readiness and proposal development.</p>
+      </div>
+      <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+         class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-medium hover:underline">
+        Browse all
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+      </a>
+    </div>
+
+    {% if featured_resources %}
+      <div class="mt-5 relative">
+        <div class="swiper home-resource-swiper">
+          <div class="swiper-wrapper">
+            {% for r in featured_resources %}
+              <div class="swiper-slide h-auto">
+                <div class="h-full">
+                  {% include "portal/includes/resource_card.html" with r=r %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="swiper-pagination home-resource-pagination mt-4 !relative"></div>
+        </div>
+
+        <button class="home-resource-prev hidden md:inline-flex absolute -left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.4 5.4L9.8 11l5.6 5.6L14 18l-7-7 7-7z"/></svg>
+        </button>
+        <button class="home-resource-next hidden md:inline-flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8.6 18.6L14.2 13 8.6 7.4 10 6l7 7-7 7z"/></svg>
+        </button>
+      </div>
+    {% else %}
+      <div class="mt-5 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center text-slate-600 dark:text-slate-400">
+        <div class="mx-auto mb-3 w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📦</div>
+        <p class="font-medium">No featured resources yet</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- Webinars + Trainings -->
+  <section class="grid lg:grid-cols-12 gap-8">
+    <div class="lg:col-span-7">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Events</p>
+          <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Upcoming webinars</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Live and recorded learning sessions</p>
+        </div>
         <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-           class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft hover:shadow-lg transition-all">
-          <div class="p-6 flex flex-col items-center text-center gap-3">
-            <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-slate-800 flex items-center justify-center">
-              <svg class="w-7 h-7 text-brand-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M17 10.5V6a2 2 0 0 0-2-2H5A2 2 0 0 0 3 6v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4.5l4 4V6.5l-4 4z"/>
-              </svg>
+           class="text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline">See all</a>
+      </div>
+
+      {% if upcoming_webinars %}
+        <div class="mt-5 relative">
+          <div class="swiper home-webinar-swiper">
+            <div class="swiper-wrapper">
+              {% for w in upcoming_webinars %}
+                <div class="swiper-slide h-auto">
+                  <div class="h-full">
+                    {% include "portal/includes/webinar_card.html" with webinar=w %}
+                  </div>
+                </div>
+              {% endfor %}
             </div>
-            <div class="text-4xl font-extrabold">{{ webinar_count|default:0 }}</div>
-            <div class="text-slate-500 dark:text-slate-400">Webinars</div>
+            <div class="swiper-pagination home-webinar-pagination mt-4 !relative"></div>
+          </div>
+
+          <button class="home-webinar-prev hidden md:inline-flex absolute -left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.4 5.4L9.8 11l5.6 5.6L14 18l-7-7 7-7z"/></svg>
+          </button>
+          <button class="home-webinar-next hidden md:inline-flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8.6 18.6L14.2 13 8.6 7.4 10 6l7 7-7 7z"/></svg>
+          </button>
+        </div>
+      {% else %}
+        <div class="mt-5 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center text-slate-600 dark:text-slate-400">
+          <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📅</div>
+          <p class="font-medium">No webinars yet</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="lg:col-span-5">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Trainings</p>
+          <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Learning programs</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Structured pathways and capacity-building support</p>
+        </div>
+         <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}" class="text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline">View all</a>
+      </div>
+
+      <div class="mt-5 grid gap-4">
+         <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+           class="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 14L5.74 13.59 4.33 14.4 12 18.6l7.67-4.2-1.41-.81L12 17z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold group-hover:text-emerald-700 dark:group-hover:text-emerald-300">Explore training catalogue</h3>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                Browse available trainings by topic, level, and target audience.
+              </p>
+            </div>
           </div>
         </a>
 
-        <!-- Impact Stories -->
-        <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-           class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft hover:shadow-lg transition-all">
-          <div class="p-6 flex flex-col items-center text-center gap-3">
-            <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-slate-800 flex items-center justify-center">
-              <svg class="w-7 h-7 text-brand-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
-              </svg>
+         <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+           class="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5c0-1.1-.9-2-2-2zm-8 14H7v-2h4v2zm6-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
             </div>
-            <div class="text-4xl font-extrabold">{{ testimonial_count|default:0 }}</div>
-            <div class="text-slate-500 dark:text-slate-400">Impact Stories</div>
+            <div>
+              <h3 class="font-semibold group-hover:text-emerald-700 dark:group-hover:text-emerald-300">Follow learning tracks</h3>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                Start with readiness and progress to project design and implementation.
+              </p>
+            </div>
           </div>
         </a>
 
-        <!-- Experts -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 p-4">
+          <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Quick links</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+             <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}" class="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-300">All trainings</a>
+            <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}" class="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-300">Webinars</a>
+            <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}" class="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-300">Resources</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community + Impact stories -->
+  <section class="grid lg:grid-cols-12 gap-8">
+    <div class="lg:col-span-5">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Community</p>
+          <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Community highlights</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Facilitators, mentors and peers</p>
+        </div>
         <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-           class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft hover:shadow-lg transition-all">
-          <div class="p-6 flex flex-col items-center text-center gap-3">
-            <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-slate-800 flex items-center justify-center">
-              <svg class="w-7 h-7 text-brand-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4.4 0-8 2-8 4.5V21h16v-2.5C20 16 16.4 14 12 14z"/>
-              </svg>
-            </div>
-            <div class="text-4xl font-extrabold">{{ expert_count|default:0 }}</div>
-            <div class="text-slate-500 dark:text-slate-400">Experts</div>
-          </div>
-        </a>
-
+           class="text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:underline">Meet all</a>
       </div>
-    </section>
 
-    <!-- Who it's for -->
-    <section>
-      <div class="grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-4 text-sm">
-          <p class="font-semibold text-slate-800 dark:text-slate-100">Government &amp; NDC teams</p>
-          <p class="mt-1 text-slate-600 dark:text-slate-300">
-            Find guidance to turn national plans into fundable adaptation pipelines.
-          </p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-4 text-sm">
-          <p class="font-semibold text-slate-800 dark:text-slate-100">Project developers</p>
-          <p class="mt-1 text-slate-600 dark:text-slate-300">
-            Access templates, examples, and webinars on proposal design and delivery.
-          </p>
-        </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-4 text-sm">
-          <p class="font-semibold text-slate-800 dark:text-slate-100">Partners &amp; facilitators</p>
-          <p class="mt-1 text-slate-600 dark:text-slate-300">
-            Connect with the community of practice and training materials for capacity building.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Resources -->
-    <section>
-      <div class="flex items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold flex flex-wrap items-center gap-2">
-          <span>Featured resources</span>
-          <span class="flex items-center gap-1 text-xs font-normal text-slate-500">
-            <span class="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Updated regularly
-          </span>
-        </h2>
-
-        <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
-           class="text-sm text-brand-600 hover:underline">
-           Browse all →
-        </a>
-      </div>
-      <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% if featured_resources %}
-          {% for r in featured_resources %}
-            {% include "portal/includes/resource_card.html" with r=r %}
+      <div class="mt-5 grid sm:grid-cols-2 lg:grid-cols-1 gap-5">
+        {% if experts %}
+          {% for e in experts|slice:":3" %}
+            {% include "portal/includes/expert_card.html" with expert=e %}
           {% endfor %}
         {% else %}
-          <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-            <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📦</div>
-            <p class="font-medium">No resources yet</p>
+          <div class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center text-slate-600 dark:text-slate-400">
+            <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🧑‍💼</div>
+            <p class="font-medium">No experts yet</p>
           </div>
         {% endif %}
       </div>
-    </section>
+    </div>
 
-    <!-- Split: Upcoming Webinars + Community of Practice -->
-    <section class="grid lg:grid-cols-2 gap-8">
-      <!-- Webinars -->
-      <div>
-        <div class="flex items-center justify-between gap-4">
-          <h2 class="text-xl font-semibold flex flex-wrap items-center gap-2">
-            <span>Upcoming webinars</span>
-            <span class="text-xs font-normal text-slate-500">Live &amp; on-demand</span>
-          </h2>
-
-          <a href="{% if webinars_index %}{{ webinars_index.url }}{% else %}/webinars/{% endif %}"
-             class="text-sm text-brand-600 hover:underline">
-             See all →
-          </a>
+    <div class="lg:col-span-7">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="uc-kicker text-emerald-700 dark:text-emerald-300">Stories</p>
+          <h2 class="uc-section-title text-xl md:text-2xl font-bold mt-1">Impact stories</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-300">How learning is being applied in practice</p>
         </div>
-        <div class="mt-4 grid sm:grid-cols-2 gap-6">
-          {% if upcoming_webinars %}
-            {% for w in upcoming_webinars %}
-              {% include "portal/includes/webinar_card.html" with webinar=w %}
-            {% endfor %}
-          {% else %}
-            <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">📅</div>
-              <p class="font-medium">No webinars yet</p>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Community of Practice -->
-      <div>
-        <div class="flex items-center justify-between gap-4">
-          <h2 class="text-xl font-semibold flex flex-wrap items-center gap-2">
-            <span>Community of practice highlights</span>
-            <span class="text-xs font-normal text-slate-500">Facilitators, mentors &amp; peers</span>
-          </h2>
-
-          <a href="{% if experts_index %}{{ experts_index.url }}{% else %}/experts/{% endif %}"
-             class="text-sm text-brand-600 hover:underline">
-             Meet the community →
-          </a>
-        </div>
-        <div class="mt-4 grid sm:grid-cols-2 gap-6">
-          {% if experts %}
-            {% for e in experts %}
-              {% include "portal/includes/expert_card.html" with expert=e %}
-            {% endfor %}
-          {% else %}
-            <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🧑‍💼</div>
-              <p class="font-medium">No experts yet</p>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="mt-4">
-      <div class="flex items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold flex items-center gap-2">
-          <span>Impact stories</span>
-          <span class="text-base">✨</span>
-        </h2>
-
         <a href="{% if testimonials_index %}{{ testimonials_index.url }}{% else %}/testimonials/{% endif %}"
-           class="text-sm text-brand-600 hover:underline">
-           Explore all →
+           class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-medium hover:underline">
+          Explore all
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
         </a>
       </div>
-      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+      <div class="mt-5 grid gap-6 sm:grid-cols-2">
         {% if testimonials %}
-          {% for t in testimonials %}
+          {% for t in testimonials|slice:":4" %}
             {% include "portal/includes/testimonial_card.html" with t=t %}
           {% endfor %}
         {% else %}
-          <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-slate-600 dark:text-slate-400 text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-            <div class="mx-auto mb-3 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">🎤</div>
-            <p class="font-medium">No testimonials yet</p>
+          <div class="col-span-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center text-slate-600 dark:text-slate-400">
+            <div class="mx-auto mb-3 w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">✨</div>
+            <p class="font-medium">No impact stories yet</p>
           </div>
         {% endif %}
       </div>
-    </section>
+    </div>
+  </section>
 
-  </div>
-</section>
+  <!-- Final CTA -->
+  <section class="rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-gradient-to-r from-teal-700 via-emerald-600 to-green-600 text-white">
+    <div class="px-6 md:px-10 py-8 md:py-10">
+      <div class="grid lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-8">
+          <p class="uc-kicker text-white/85">Get started</p>
+          <h2 class="mt-2 text-2xl md:text-3xl font-extrabold tracking-tight">Start with a resource, webinar or training pathway</h2>
+          <p class="mt-2 text-white/90">
+            Build practical capacity and strengthen adaptation finance proposals with curated learning and community support.
+          </p>
+        </div>
+        <div class="lg:col-span-4 flex flex-wrap lg:justify-end gap-3">
+          <a href="{% if repo_index %}{{ repo_index.url }}{% else %}/repository/{% endif %}"
+             class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-white text-emerald-700 font-semibold hover:bg-emerald-50 transition">
+            Explore resources
+          </a>
+          <a href="{% if trainings_index %}{{ trainings_index.url }}{% else %}/trainings/{% endif %}"
+   class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-white/40 text-white font-medium hover:bg-white/10 transition">
+  View trainings
+</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
 {% endblock %}
+
+{% block extra_js %}{% endblock %}
