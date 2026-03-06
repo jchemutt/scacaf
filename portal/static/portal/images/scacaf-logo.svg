@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140" role="img" aria-labelledby="title desc">
+  <title id="title">SCACAF E-Hub Icon</title>
+  <desc id="desc">Icon-only mark for SCACAF E-Hub featuring a hub and leaf inside a ring.</desc>
+
+  <defs>
+    <style>
+      :root{
+        --scacaf-primary:#0B3A53; /* deep teal */
+        --scacaf-accent:#2E7D32;  /* green */
+      }
+      .primary{ fill: var(--scacaf-primary); stroke: var(--scacaf-primary); }
+      .accent{ fill: var(--scacaf-accent); stroke: var(--scacaf-accent); }
+      .stroke{ fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    </style>
+  </defs>
+
+  <!-- Icon (centered) -->
+  <g transform="translate(10,10)">
+    <!-- Outer ring -->
+    <circle cx="60" cy="60" r="54" class="primary stroke" stroke-width="6"/>
+
+    <!-- Hub connections -->
+    <path d="M40 42 L80 42 L60 84 Z" class="primary stroke" stroke-width="5" opacity="0.9"/>
+    <circle cx="40" cy="42" r="6.8" class="primary"/>
+    <circle cx="80" cy="42" r="6.8" class="primary"/>
+    <circle cx="60" cy="84" r="6.8" class="primary"/>
+
+    <!-- Leaf (knowledge + growth) -->
+    <path d="M60 28
+             C48 30, 36 42, 38 58
+             C40 78, 58 90, 60 92
+             C62 90, 80 78, 82 58
+             C84 42, 72 30, 60 28 Z"
+          class="accent" opacity="0.95"/>
+
+    <!-- Leaf vein -->
+    <path d="M60 34 C58 52, 58 70, 60 88" class="stroke" stroke="white" stroke-width="4" opacity="0.9"/>
+    <path d="M60 54 C52 52, 46 48, 42 44" class="stroke" stroke="white" stroke-width="3" opacity="0.85"/>
+    <path d="M60 54 C68 52, 74 48, 78 44" class="stroke" stroke="white" stroke-width="3" opacity="0.85"/>
+  </g>
+</svg>

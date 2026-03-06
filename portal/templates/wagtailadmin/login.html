@@ -1,0 +1,31 @@
+{% extends "wagtailadmin/login.html" %}
+{% load static i18n %}
+
+{# Logo on the login screen #}
+{% block branding_logo %}
+  <img
+    src="{% static 'portal/images/scacaf-logo.svg' %}"
+    alt="SCACAF E-Hub"
+    width="90"
+    style="height:auto;"
+  />
+{% endblock %}
+
+{# “Sign in to …” text on the login screen #}
+{% block branding_login %}
+  {% trans "Sign in to SCACAF E-Hub" %}
+{% endblock %}
+
+{# Optional help text above the form #}
+{% block above_login %}
+  <p class="help">
+    {% trans "Use your authorized account to access the SCACAF E-Hub admin panel." %}
+  </p>
+{% endblock %}
+
+{# Optional help text below the form #}
+{% block below_login %}
+  <p class="help">
+    {% trans "If you need access or forgot your credentials, contact your administrator." %}
+  </p>
+{% endblock %}

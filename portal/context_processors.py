@@ -1,6 +1,6 @@
 # portal/context_processors.py
 from wagtail.models import Site
-from .models import RepositoryIndexPage, ExpertIndexPage, WebinarIndexPage, TestimonialIndexPage,TrainingIndexPage,AboutPage
+from .models import RepositoryIndexPage, ExpertIndexPage, WebinarIndexPage, TestimonialIndexPage,TrainingIndexPage,AboutPage,ContactPage
 
 def portal_index_pages(request):
     site = Site.find_for_request(request)
@@ -16,4 +16,5 @@ def portal_index_pages(request):
         "testimonials_index": TestimonialIndexPage.objects.child_of(root).live().first(),
         "trainings_index": TrainingIndexPage.objects.live().public().first(),
         "about_index": AboutPage.objects.live().public().first(),
+        "contact_index": ContactPage.objects.live().public().first(),
     }

@@ -32,6 +32,7 @@ with open(CONFIG_PATH) as f:
 
 INSTALLED_APPS = [
     "search",
+    "portal",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
@@ -53,7 +54,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "portal",
     "wagtailmedia", 
 ]
 

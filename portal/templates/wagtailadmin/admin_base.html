@@ -1,0 +1,12 @@
+{% extends "wagtailadmin/admin_base.html" %}
+{% load static %}
+
+{# Browser tab favicon for admin #}
+{% block branding_favicon %}
+  <link rel="shortcut icon" href="{% static 'portal/images/favicon.ico' %}" />
+{% endblock %}
+
+{# Browser tab title prefix (defaults to “Wagtail”) #}
+{% block branding_title %}
+  SCACAF E-Hub
+{% endblock %}
